@@ -39,9 +39,9 @@ var ResourceSchema = new mongoose.Schema({
 			timestamp: {
 				type: Date,
 				default: Date.now
-			} 
+			}
 		}],
-	recommend_count: Number
+	recommended_by: [String]
 });
 
 

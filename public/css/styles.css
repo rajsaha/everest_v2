@@ -6,8 +6,12 @@
   margin-bottom: 50px;
 }
 
+.card-text {
+
+}
+
 .resource-tag {
-  margin:10px 10px 10px 0px;
+  margin:10px 10px 25px 0px;
 }
 
 .resource-tag:nth-last-of-type(1) {
@@ -57,4 +61,14 @@
 
 .user-bar {
   margin-bottom: 25px;
+}
+
+.form-inline {
+  display: inline;
+}
+
+.recommended-by-count {
+  font-size: 12px;
+  margin-bottom: 75px;
+  color:black;
 }

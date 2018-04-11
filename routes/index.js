@@ -175,7 +175,29 @@ router.get('/feed', mid.requiresLogin, function(req, res, next) {
 						output_tag += '<button class="btn btn-primary resource-tag" type="button">'+ tags[i] +'</button>';
 					}
 
-					output += 'div class="resource-card"><div class="card"><div class="user-bar"><span class="float-left"><strong>'+ resource.username +'</strong></span><span class="float-right"><strong>level 1</strong></span></div><a href="'+ resource.url +'"><img class="img-thumbnail card-img w-100 d-block img-thumbnail-override" src="'+ resource.image +'"></a><div class="card-body"><h4 class="card-title">'+ resource.title +'</h4><div>'+ output_tag +'</div><p class="card-text" style="margin-bottom:50px;">'+ resource.description +'</p><div class="resource-actions-container"><span class="text-uppercase"><i class="fa fa-thumbs-o-up"></i>&nbsp; Recommend</span><span class="text-uppercase float-right">&nbsp;<i class="fa fa-comment-o"></i>&nbsp; comment</span></div></div></div></div';
+					if(resource.recommended_by.includes(req.session.username)) {
+						output += 'div class="resource-card">'+
+						'<div class="card"><div class="user-bar">'+
+						'<span class="float-left"><strong>'+ resource.username +'</strong></span>'+
+						'<span class="float-right"><strong>level 1</strong></span></div>'+
+						'<a href="'+ resource.url +'"><img class="img-thumbnail card-img w-100 d-block img-thumbnail-override" src="'+ resource.image +'"></a>'+
+						'<div class="card-body"><h4 class="card-title">'+ resource.title +'</h4><div>'+ output_tag +'</div>'+
+						'<p class="card-text">'+ resource.description +'</p>' + '<div class="recommended-by-count"><p>'+ resource.recommended_by.length +
+						' Recommends' + '</p></div><div class="resource-actions-container">'+
+						'<form method="post" action="/not_recommend" class="form-inline">'+ '<input type="hidden" name="_id" value="'+ resource._id +'"></input>' +
+						'<button type="submit" class="btn text-uppercase"><i class="fas fa-thumbs-up"></i>&nbsp; Recommend</button></form><form class="form-inline"><button class="btn text-uppercase float-right">&nbsp;<i class="far fa-comment"></i>&nbsp; comment</button></form></div></div></div></div';
+					} else {
+							output += 'div class="resource-card">'+
+							'<div class="card"><div class="user-bar">'+
+							'<span class="float-left"><strong>'+ resource.username +'</strong></span>'+
+							'<span class="float-right"><strong>level 1</strong></span></div>'+
+							'<a href="'+ resource.url +'"><img class="img-thumbnail card-img w-100 d-block img-thumbnail-override" src="'+ resource.image +'"></a>'+
+							'<div class="card-body"><h4 class="card-title">'+ resource.title +'</h4><div>'+ output_tag +'</div>'+
+							'<p class="card-text">'+ resource.description +'</p>' + '<div class="recommended-by-count"><p>'+ resource.recommended_by.length +
+							' Recommends' + '</p></div><div class="resource-actions-container">'+
+							'<form method="post" action="/recommend" class="form-inline">'+ '<input type="hidden" name="_id" value="'+ resource._id +'"></input>' +
+							'<button type="submit" class="btn text-uppercase"><i class="far fa-thumbs-up"></i>&nbsp; Recommend</button></form><form class="form-inline"><button class="btn text-uppercase float-right">&nbsp;<i class="far fa-comment"></i>&nbsp; comment</button></form></div></div></div></div';
+					}
 
 					output_tag = '';
 				});
@@ -186,6 +208,42 @@ router.get('/feed', mid.requiresLogin, function(req, res, next) {
 				});
 			}
 		});
+});
+
+//POST /recommend
+router.post('/recommend', function(req, res, next) {
+	if(req.body._id) {
+		Resource.findOneAndUpdate({_id:req.body._id}, {$push:{recommended_by:req.session.username}})
+			.exec(function (error, resource) {
+				if(error) {
+					return next(error);
+				} else {
+					return res.redirect('/feed');
+				}
+			});
+	} else {
+  	var err = new Error('Something went wrong!' + req.body._id);
+  	err.status = 400;
+  	return next(err);
+  }
+});
+
+//POST /recommend
+router.post('/not_recommend', function(req, res, next) {
+	if(req.body._id) {
+		Resource.findOneAndUpdate({_id:req.body._id}, {$pop:{recommended_by:req.session.username}})
+			.exec(function (error, resource) {
+				if(error) {
+					return next(error);
+				} else {
+					return res.redirect('/feed');
+				}
+			});
+	} else {
+  	var err = new Error('Something went wrong!' + req.body._id);
+  	err.status = 400;
+  	return next(err);
+  }
 });
 
 // GET /about
