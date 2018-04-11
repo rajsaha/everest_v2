@@ -1,0 +1,27 @@
+{
+  "name": "everest",
+  "version": "1.0.0",
+  "description": "Social network for free academic content",
+  "private": true,
+  "scripts": {
+    "start": "node ./app"
+  },
+  "keywords": [
+    "social",
+    "network",
+    "free",
+    "academic"
+  ],
+  "author": "Raj N. Saha",
+  "license": "MIT",
+  "dependencies": {
+    "bcrypt": "^2.0.0",
+    "body-parser": "^1.18.2",
+    "connect-mongo": "^2.0.1",
+    "express": "^4.16.3",
+    "express-session": "^1.15.6",
+    "mongoose": "^5.0.13",
+    "pug": "^2.0.3",
+    "url-metadata": "^2.1.7"
+  }
+}

@@ -1,0 +1,60 @@
+.no-padding {
+  padding:0;
+}
+
+.card {
+  margin-bottom: 50px;
+}
+
+.resource-tag {
+  margin:10px 10px 10px 0px;
+}
+
+.resource-tag:nth-last-of-type(1) {
+  margin-right:0px;
+}
+
+.resource-actions-container {
+  background-color:#EBE9E9;
+  padding:15px;
+  position:absolute;
+  bottom:0;
+  width:100%;
+  margin-left:-20px;
+}
+
+.share-resources-button {
+  border-radius:5px;
+}
+
+.profile-sidebar {
+  margin-top:25px;
+}
+
+.profile-sidebar-content {
+  margin-top:25px;
+}
+
+.signup-button {
+  background: transparent;
+  color:#333333;
+  border-color:#333333;
+}
+
+.intro {
+  margin-left: auto;
+  margin-right: auto;
+  width: 500px;
+}
+
+.resource-card .card {
+  display:inherit;
+}
+
+.card {
+  display:none;
+}
+
+.user-bar {
+  margin-bottom: 25px;
+}

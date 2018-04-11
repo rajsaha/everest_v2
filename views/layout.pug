@@ -1,0 +1,36 @@
+doctype html
+html
+  head
+    meta(charset='utf-8')
+    meta(name='viewport', content='width=device-width, initial-scale=1.0')
+    title Everest | #{title}
+    link(rel='stylesheet', href='bootstrap/css/bootstrap.min.css')
+    link(rel='stylesheet', href='fonts/font-awesome.min.css')
+    link(rel='stylesheet', href='fonts/ionicons.min.css')
+    link(rel='stylesheet', href='css/Footer-Basic.css')
+    link(rel='stylesheet', href='css/Highlight-Clean.css')
+    link(rel='stylesheet', href='css/Login-Form-Clean.css')
+    link(rel='stylesheet', href='css/Navigation-with-Button.css')
+    link(rel='stylesheet', href='css/Registration-Form-with-Photo.css')
+    link(rel='stylesheet', href='css/styles.css')
+    link(href='https://fonts.googleapis.com/css?family=Montserrat:400,700,900', rel='stylesheet')
+
+  body
+    //load navbar.jade
+    include navbar
+
+    //content block
+    block content
+
+    //footer
+    .footer-basic
+      footer
+        ul.list-inline
+          li.list-inline-item
+            a(href='#') Home
+          li.list-inline-item
+            a(href='#') About
+        p.copyright Raj Saha © 2017
+    script(src='js/jquery.min.js')
+    script(src='bootstrap/js/bootstrap.min.js')
+    script(src='js/script.js')

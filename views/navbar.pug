@@ -1,0 +1,53 @@
+div
+  nav.navbar.navbar-light.navbar-expand-md.navigation-clean-button(style='padding-bottom:16px;')
+    .container
+      a.navbar-brand.text-uppercase(href='/', style='font-weight:normal;')
+        img#sitelogo(src='img/everest_minimal.svg', width='40px')
+        |   &nbsp;&nbsp;E v e r e s t
+      button.navbar-toggler(data-toggle='collapse', data-target='#navcol-1')
+        span.sr-only Toggle navigation
+        span.navbar-toggler-icon
+      #navcol-1.collapse.navbar-collapse
+        ul.nav.navbar-nav.mr-auto
+          if currentUser
+            li.nav-item
+                a.nav-link(href='feed') Resource Feed             
+            li.nav-item.share-resources-button(role='button', data-toggle='modal', data-target='#resourceShare')
+                a.nav-link.share-resources-button(href='#resourceShare') Share Resource
+            li.nav-item
+                a.nav-link(href='profile') Profile
+        ul.nav.navbar-nav.ml-auto
+          li.nav-item
+            if currentUser
+              span.navbar-text.actions HI, #{name}&nbsp;&nbsp;
+              span.navbar-text.actions
+                a.login(href='logout') Log Out
+            else
+              span.navbar-text.actions
+                a.login(href='login') Log In
+            if !currentUser
+              a.btn.btn-primary.action-button.signup-button(role='button', href='register') Sign Up
+#resourceShare.modal.fade(tabindex='-1', role='dialog', aria-hidden='true')
+                  .modal-dialog(role='document')
+                    .modal-content
+                      .modal-header
+                        h5.modal-title Share a Resource
+                        button.close(type='button', data-dismiss='modal', aria-label='Close')
+                          span(aria-hidden='true') ×
+                      #modal.modal-body
+                        form(method='post' action='/resource_upload')
+                          .form-group
+                            label(for='url') URL
+                            input#url.form-control(type='url', aria-describedby='url', placeholder='Paste in your URL here' name='url')
+                          .form-group
+                            label(for='title') Title
+                            input#title.form-control(type='text', aria-describedby='title', placeholder='Paste in your URL here' name='title')
+                          .form-group
+                            label(for='tags') Tags
+                            input#tags.form-control(type='text', placeholder='Separate tags with commas' name='tags')
+                          .form-group
+                            label(for='description') Description
+                            input#desc.form-control(type='text', placeholder='Why is it a good resource?' name='desc')
+                          .modal-footer
+                            button.btn.btn-secondary(type='button', data-dismiss='modal') Close
+                            button#share.btn.btn-primary Share

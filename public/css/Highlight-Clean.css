@@ -1,0 +1,74 @@
+.highlight-clean {
+  color:#313437;
+  background-color:#fff;
+  background-image: url(../img/bg.jpg);
+  background-repeat: no-repeat;
+  background-size: cover;
+  padding:50px 0;
+  margin-bottom: 50px;
+  height:65vh;
+}
+
+.highlight-clean h1 {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 700;
+  color:rgba(0,0,0,0.7);
+  font-size: 100px;
+  text-align: center;
+  margin-top:50px;
+}
+
+.highlight-clean p {
+  color:white;
+}
+
+.highlight-clean h2 {
+  font-family: 'Montserrat', sans-serif;
+  font-weight:bold;
+  margin-bottom:25px;
+  padding-top:0;
+  margin-top:0;
+  color:rgba(0,0,0,0.7);
+  text-transform: uppercase;
+}
+
+.highlight-clean .intro {
+  font-size:16px;
+  max-width:500px;
+  margin:0 auto 25px;
+}
+
+.highlight-clean .buttons {
+  text-align:center;
+}
+
+.highlight-clean .buttons .btn {
+  padding:16px 32px;
+  margin:6px;
+  border:none;
+  background:none;
+  box-shadow:none;
+  text-shadow:none;
+  opacity:0.9;
+  text-transform:uppercase;
+  font-weight:bold;
+  font-size:13px;
+  letter-spacing:0.4px;
+  line-height:1;
+  outline:none;
+  background-color:#ddd;
+}
+
+.highlight-clean .buttons .btn:hover {
+  opacity:1;
+}
+
+.highlight-clean .buttons .btn:active {
+  transform:translateY(1px);
+}
+
+.highlight-clean .buttons .btn-primary {
+  background-color:#055ada;
+  color:#fff;
+}
+

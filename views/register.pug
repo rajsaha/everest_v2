@@ -1,0 +1,25 @@
+extends layout
+
+block content
+	.register-photo
+		.form-container
+			.image-holder
+			form(method='post' action='/register')
+				h2.text-center
+					strong Create
+					|  an account.
+				.form-group
+					input.form-control(type='text', name='name', placeholder='Name')
+				.form-group
+					input.form-control(type='email', name='email', placeholder='Email')
+				.form-group
+					input.form-control(type='username', name='username', placeholder='Username')
+				.form-group
+					input.form-control(type='text', name='interests', placeholder='Interests')
+				.form-group
+					input.form-control(type='password', name='password', placeholder='Password')
+				.form-group
+					input.form-control(type='password', name='confirmPassword', placeholder='Password (repeat)')
+				.form-group
+					button.btn.btn-primary.btn-block(type='submit') Sign Up
+				a.already(href='login') You already have an account? Login here.

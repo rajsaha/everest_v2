@@ -1,0 +1,15 @@
+extends layout
+
+block content
+			.login-clean
+				form(method='post' action='/login')
+					h2.sr-only Login Form
+					.illustration
+						i.icon.ion-locked
+					.form-group
+						input.form-control(type='username', name='username', placeholder='Username')
+					.form-group
+						input.form-control(type='password', name='password', placeholder='Password')
+					.form-group
+						button.btn.btn-primary.btn-block(type='submit', style='background-color:rgb(253,94,15);') Log In
+					a.forgot(href='#') Forgot your email or password?

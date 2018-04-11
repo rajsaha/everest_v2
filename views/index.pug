@@ -1,0 +1,24 @@
+extends layout
+
+block content
+	.container-fluid.no-padding
+		.highlight-clean
+			//img.img-fluid.d-block.m-auto.img-thumbnail-override(src='img/everest.png', style='width:244px;')
+			h1 EVEREST
+			h2.text-center 
+				| Free academic resources. 
+				br
+				| Curated just for you.
+	.container
+		.col-md-12
+			.intro
+				p.text-center
+					| Whether you're an artist or a web developer, the Internet has amazingly useful academic resources you can access 
+					strong for free.
+					|  Everest gets you the best of them and lets you share your own.
+				if !currentUser
+					.buttons.text-center
+						a.btn.btn-primary(role='button', href='register') Sign Up
+					p.text-center
+						| Have an account already? 
+						a(href='login') Sign in.

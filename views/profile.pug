@@ -1,0 +1,27 @@
+extends layout
+
+block content
+	.container
+		.row
+			.col-md-3
+				.profile-sidebar
+					#v-pills-tab.nav.flex-column.nav-pills(role='tablist', aria-orientation='vertical')
+						a#v-pills-home-tab.nav-link.active(data-toggle='pill', href='#v-pills-home', role='tab', aria-controls='v-pills-home', aria-selected='true') Personal Details
+						a#v-pills-profile-tab.nav-link(data-toggle='pill', href='#v-pills-profile', role='tab', aria-controls='v-pills-profile', aria-selected='false') Collections
+						a#v-pills-messages-tab.nav-link(data-toggle='pill', href='#v-pills-messages', role='tab', aria-controls='v-pills-messages', aria-selected='false') Followers
+						a#v-pills-settings-tab.nav-link(data-toggle='pill', href='#v-pills-settings', role='tab', aria-controls='v-pills-settings', aria-selected='false') Settings
+			.col-md-9
+				.profile-sidebar-content
+					#v-pills-tabContent.tab-content
+						#v-pills-home.tab-pane.fade.show.active(role='tabpanel', aria-labelledby='v-pills-home-tab')
+							form
+								.form-group
+									label(for='exampleInputEmail1') Name
+									input.form-control(type='email', aria-describedby='emailHelp', placeholder=name)
+								.form-group
+									label(for='exampleInputPassword1') Email
+									input.form-control(type='password', placeholder=email)
+								button.btn.btn-primary(type='submit') Update
+						#v-pills-profile.tab-pane.fade(role='tabpanel', aria-labelledby='v-pills-profile-tab') Collections shown here
+						#v-pills-messages.tab-pane.fade(role='tabpanel', aria-labelledby='v-pills-messages-tab') Followers shown here
+						#v-pills-settings.tab-pane.fade(role='tabpanel', aria-labelledby='v-pills-settings-tab') Various settings regarding personal info
