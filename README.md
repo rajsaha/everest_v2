@@ -8,3 +8,12 @@ TO-DO LIST
 3. Clickable usernames (opens that user's profile where they can be 'followed')
 4. Feed generation based on 'Followers' in user's document
 5. Comment system (socket.io implementation)
+
+SCREENSHOTS
+-----------
+
+![Home Page](/screenshots/1.png)
+
+![Resource Feed Page](/screenshots/2.png)
+
+![Profile Page](/screenshots/3.png)
