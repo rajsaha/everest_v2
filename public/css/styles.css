@@ -95,9 +95,13 @@
 }
 
 .comment-box {
-  padding-top:15px;
+
 }
 
 .comment-time {
   color:#858383;
+}
+
+.add-comment-form {
+  padding-top:15px;
 }

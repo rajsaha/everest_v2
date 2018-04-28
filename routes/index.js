@@ -236,7 +236,15 @@ router.get('/feed-data', function(req, res, next) {
 						'</div>';
 					}
 
+					//comment_box goes in the empty space
 					if(resource.recommended_by.includes(req.session.username)) {
+						var comment_box=
+						'<form class="form-group" onsubmit="add_comment(\''+ resource._id +'\');return false;">'+
+						'<input class="form-control" type="text" name="'+ resource._id +'" placeholder="Write a comment..."></input>'+
+						'<button type="submit" style="display:none"></button>'+
+						'</form>'+
+						'<div class="resource-comments '+ resource._id +'">' + output_comments + '</div>';
+
 						output += 'div class="resource-card">'+
 						'<div class="card" id="'+ resource._id +'">'+
 						'<div class="user-bar">'+
@@ -254,8 +262,16 @@ router.get('/feed-data', function(req, res, next) {
 						'<button type="button" class="btn text-uppercase recommend-button" id="not_recommend" onclick="un_recommend_resource(\''+ resource._id +'\');return false;"><i class="fas fa-thumbs-up"></i>&nbsp; Recommend</button>'+
 						'</form>'+
 						'<form class="form-inline">'+
-						'<button class="btn text-uppercase float-right">&nbsp;<i class="far fa-comment"></i>&nbsp; comment</button></form>'+
-						'<div class="comment-box">'+
+						'<button type="button" class="btn text-uppercase float-right" data-comment=\"'+ resource._id +'\" onclick="load_comments_request(\''+ resource._id +'\');return false;">&nbsp;<i class="far fa-comment"></i>&nbsp; comment</button></form>'+
+						'<div class="comment-box comment_box'+ resource._id +'">'+
+
+						'</div>'+
+						'</div>'+
+						'</div>'+
+						'</div>'+
+						'</div';
+					} else {
+						var comment_box='<div class="comment-box">'+
 						'<form class="form-group" onsubmit="add_comment(\''+ resource._id +'\');return false;">'+
 						'<input class="form-control" type="text" name="'+ resource._id +'" placeholder="Write a comment..."></input>'+
 						'<button type="submit" style="display:none"></button>'+
@@ -263,39 +279,33 @@ router.get('/feed-data', function(req, res, next) {
 						'</div>' +
 						'<div class="resource-comments '+ resource._id +'">'+
 						output_comments +
+						'</div>';
+
+							output += 'div class="resource-card">'+
+						'<div class="card" id="'+ resource._id +'">'+
+						'<div class="user-bar">'+
+						'<span class="float-left"><strong>'+ resource.username +'</strong></span>'+
+						'<span class="float-right"><strong>level 1</strong></span>'+
+						'</div>'+
+						'<a href="'+ resource.url +'"><img class="img-thumbnail card-img w-100 d-block img-thumbnail-override" src="'+ resource.image +'"></a>'+
+						'<div class="card-body"><h4 class="card-title">'+ resource.title +'</h4>'+
+						'<div class="resource-tags-container">'+ output_tag +'</div>'+
+						'<p class="card-text">'+ resource.description +'</p>' +
+						'<div class="recommended-by-count"><p>'+ resource.recommended_by_count + ' Recommends' + '</p></div>'+
+						'<div class="resource-actions-container">'+
+						'<form class="form-inline">'+
+						'<input type="hidden" name="_id" value="'+ resource._id +'" id="resource_id"></input>' +
+						'<button type="button" class="btn text-uppercase recommend-button" id="recommend" onclick="recommend_resource(\''+ resource._id +'\');return false;"><i class="far fa-thumbs-up"></i>&nbsp; Recommend</button>'+
+						'</form>'+
+						'<form class="form-inline">'+
+						'<button type="button" class="btn text-uppercase float-right" data-comment=\"'+ resource._id +'\" onclick="load_comments_request(\''+ resource._id +'\');return false;">&nbsp;<i class="far fa-comment"></i>&nbsp; comment</button></form>'+
+						'<div class="comment-box comment_box'+ resource._id +'">'+
+
 						'</div>'+
 						'</div>'+
 						'</div>'+
 						'</div>'+
 						'</div';
-					} else {
-							output += 'div class="resource-card" id="'+ resource._id +'">'+
-							'<div class="card" id="'+ resource._id +'">'+
-							'<div class="user-bar">'+
-							'<span class="float-left"><strong>'+ resource.username +'</strong></span>'+
-							'<span class="float-right"><strong>level 1</strong></span>'+
-							'</div>'+
-							'<a href="'+ resource.url +'"><img class="img-thumbnail card-img w-100 d-block img-thumbnail-override" src="'+ resource.image +'"></a>'+
-							'<div class="card-body"><h4 class="card-title">'+ resource.title +'</h4>'+
-							'<div class="resource-tags-container">'+ output_tag +'</div>'+
-							'<p class="card-text">'+ resource.description +'</p>' + 
-							'<div class="recommended-by-count"><p>'+ resource.recommended_by_count +' Recommends' + '</p></div>'+
-							'<div class="resource-actions-container">'+
-							'<form class="form-inline">'+ '<input type="hidden" name="_id" value="'+ resource._id +'" id="resource_id"></input>' +
-							'<button type="button" class="btn text-uppercase recommend-button" id="recommend" onclick="recommend_resource(\''+ resource._id +'\');return false;">'+
-							'<i class="far fa-thumbs-up"></i>&nbsp; Recommend</button></form>'+
-							'<form class="form-inline">'+'<button class="btn text-uppercase float-right">&nbsp;<i class="far fa-comment"></i>&nbsp; comment</button></form>'+
-							'<div class="comment-box">'+
-							'<form class="form-group" onsubmit="add_comment(\''+ resource._id +'\');return false;">'+
-							'<input class="form-control" type="text" name="'+ resource._id +'" placeholder="Write a comment..."></input>'+
-							'<button type="submit" style="display:none"></button>'+
-							'</form>'+
-							'<div class="resource-comments '+ resource._id +'">'+ output_comments +'</div>'+
-							'</div>' +
-							'</div>'+
-							'</div>'+
-							'</div>'+
-							'</div';
 					}
 
 					output_tag = '';
@@ -377,7 +387,7 @@ router.post('/recommend', function(req, res, next) {
   }
 });
 
-//POST /recommend
+//POST /not_recommend
 router.post('/not_recommend', function(req, res, next) {
 	if(req.body._id) {
 		Resource.findOneAndUpdate({_id:req.body._id}, {$pop:{recommended_by:req.session.username}, $inc: {recommended_by_count: -1}})
@@ -400,7 +410,7 @@ router.post('/not_recommend', function(req, res, next) {
 router.post('/add_comment', function(req, res, next) {
 	if(req.body._comment && req.body._id) {
 
-		var time = new Date();
+		var time = new Date().toLocaleString();
 
 		var comment = {
 			username: req.session.username,
@@ -432,6 +442,21 @@ router.post('/add_comment', function(req, res, next) {
   	err.status = 400;
   	return next(err);
   }
+});
+
+//GET /get_comments
+router.post('/get_comments', function(req, res, next) {
+	if(req.body._id) {
+		Resource.find({_id:req.body._id})
+			.exec(function(error, resource) {
+				if(error) {
+					return next(error);
+				} else {
+					req.app.io.emit('load_comments', resource);
+					return res.redirect('/feed');
+				}
+			});
+	}
 });
 
 // GET /about
