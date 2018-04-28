@@ -3,7 +3,11 @@ var bodyParser = require('body-parser');
 var mongoose = require('mongoose');
 var session = require('express-session');
 var MongoStore = require('connect-mongo')(session);
+var http = require('http');
 var app = express();
+var server = http.createServer(app);
+var io = require('socket.io').listen(server);
+app.io = io;
 
 //mongodb connection
 mongoose.connect("mongodb://everest:everest@ds261118.mlab.com:61118/everest");
@@ -40,7 +44,7 @@ app.set('view engine', 'pug');
 app.set('views', __dirname + '/views');
 
 //include routes
-var routes = require('./routes/index');
+var routes = require('./routes/index')(io);
 app.use('/', routes);
 
 //catch 404 and forward to error handler
@@ -60,6 +64,10 @@ app.use(function(err, req, res, next) {
   });
 });
 
-app.listen(3000, function() {
-  console.log('Express app listening on port 3000');
+io.on('connection', (socket) => {
+  console.log('a user connected');
+});
+
+server.listen(3000, function() {
+  console.log('Socket app listening on port 3000');
 });

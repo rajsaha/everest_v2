@@ -6,12 +6,25 @@
   margin-bottom: 50px;
 }
 
-.card-text {
+.card-title {
+  padding-left:15px;
+  padding-top:15px;
+}
 
+.card-body {
+  padding:0;
+}
+
+.card-text {
+  padding-left:15px;
 }
 
 .resource-tag {
   margin:10px 10px 25px 0px;
+}
+
+.resource-tags-container {
+  padding-left: 15px;
 }
 
 .resource-tag:nth-last-of-type(1) {
@@ -21,10 +34,11 @@
 .resource-actions-container {
   background-color:#EBE9E9;
   padding:15px;
-  position:absolute;
-  bottom:0;
-  width:100%;
-  margin-left:-20px;
+  width:inherit;
+}
+
+.resource-actions-container form {
+  margin-bottom: 25px;
 }
 
 .share-resources-button {
@@ -69,6 +83,21 @@
 
 .recommended-by-count {
   font-size: 12px;
-  margin-bottom: 75px;
+  margin-bottom: 25px;
   color:black;
+  padding-left:15px;
+}
+
+.explore-search {
+  margin-left: auto;
+  margin-right: auto;
+  padding: 5% 25% 0% 25%;
+}
+
+.comment-box {
+  padding-top:15px;
+}
+
+.comment-time {
+  color:#858383;
 }

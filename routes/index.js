@@ -184,6 +184,154 @@ router.get('/feed', mid.requiresLogin, function(req, res, next) {
 						'<div class="card-body"><h4 class="card-title">'+ resource.title +'</h4><div>'+ output_tag +'</div>'+
 						'<p class="card-text">'+ resource.description +'</p>' + '<div class="recommended-by-count"><p>'+ resource.recommended_by.length +
 						' Recommends' + '</p></div><div class="resource-actions-container">'+
+						'<form class="form-inline">'+ '<input type="hidden" name="_id" value="'+ resource._id +'" id="resource_id"></input>' +
+						'<button type="button" class="btn text-uppercase" id="not_recommend" onclick="un_recommend_resource(\''+ resource._id +'\');return false;"><i class="fas fa-thumbs-up"></i>&nbsp; Recommend</button></form><form class="form-inline"><button class="btn text-uppercase float-right">&nbsp;<i class="far fa-comment"></i>&nbsp; comment</button></form></div></div></div></div';
+					} else {
+							output += 'div class="resource-card">'+
+							'<div class="card"><div class="user-bar">'+
+							'<span class="float-left"><strong>'+ resource.username +'</strong></span>'+
+							'<span class="float-right"><strong>level 1</strong></span></div>'+
+							'<a href="'+ resource.url +'"><img class="img-thumbnail card-img w-100 d-block img-thumbnail-override" src="'+ resource.image +'"></a>'+
+							'<div class="card-body"><h4 class="card-title">'+ resource.title +'</h4><div>'+ output_tag +'</div>'+
+							'<p class="card-text">'+ resource.description +'</p>' + '<div class="recommended-by-count"><p>'+ resource.recommended_by.length +
+							' Recommends' + '</p></div><div class="resource-actions-container">'+
+							'<form class="form-inline">'+ '<input type="hidden" name="_id" value="'+ resource._id +'" id="resource_id"></input>' +
+							'<button type="button" class="btn text-uppercase" id="recommend" onclick="recommend_resource(\''+ resource._id +'\');return false;"><i class="far fa-thumbs-up"></i>&nbsp; Recommend</button></form><form class="form-inline"><button class="btn text-uppercase float-right">&nbsp;<i class="far fa-comment"></i>&nbsp; comment</button></form></div></div></div></div';
+					}
+
+					output_tag = '';
+				});
+				return res.render('feed', {
+					title: 'Resource Feed',
+					name: req.session.username,
+					all_resources: output
+				});
+			}
+		});
+});
+
+//GET /feed-data
+router.get('/feed-data', function(req, res, next) {
+  var output = '';
+  var output_tag = '';
+  var output_comments = '';
+  Resource.find({}).sort(sort)
+		.exec(function (error, resource) {
+			if(error) {
+				return next(error);
+			} else {
+				resource.forEach((resource) => {
+					//split tags
+					var tags = resource.tags.split(', ');
+					var comments = resource.all_comments;
+					for(var i = 0; i<tags.length; i++) {
+						output_tag += '<button class="btn btn-primary resource-tag" type="button">'+ tags[i] +'</button>';
+					}
+
+					for(var i=0; i<comments.length; i++) {
+						output_comments += '<div class="comment">'+
+						'<span class="username"><strong>'+ comments[i].username + ' ' +'</strong></span>'+
+						'<span class="comment-content">'+ comments[i].content +'</span>'+
+						'<p class="comment-time">'+ comments[i].timestamp +'</p>'+
+						'</div>';
+					}
+
+					if(resource.recommended_by.includes(req.session.username)) {
+						output += 'div class="resource-card">'+
+						'<div class="card" id="'+ resource._id +'">'+
+						'<div class="user-bar">'+
+						'<span class="float-left"><strong>'+ resource.username +'</strong></span>'+
+						'<span class="float-right"><strong>level 1</strong></span>'+
+						'</div>'+
+						'<a href="'+ resource.url +'"><img class="img-thumbnail card-img w-100 d-block img-thumbnail-override" src="'+ resource.image +'"></a>'+
+						'<div class="card-body"><h4 class="card-title">'+ resource.title +'</h4>'+
+						'<div class="resource-tags-container">'+ output_tag +'</div>'+
+						'<p class="card-text">'+ resource.description +'</p>' +
+						'<div class="recommended-by-count"><p>'+ resource.recommended_by_count + ' Recommends' + '</p></div>'+
+						'<div class="resource-actions-container">'+
+						'<form class="form-inline">'+
+						'<input type="hidden" name="_id" value="'+ resource._id +'" id="resource_id"></input>' +
+						'<button type="button" class="btn text-uppercase recommend-button" id="not_recommend" onclick="un_recommend_resource(\''+ resource._id +'\');return false;"><i class="fas fa-thumbs-up"></i>&nbsp; Recommend</button>'+
+						'</form>'+
+						'<form class="form-inline">'+
+						'<button class="btn text-uppercase float-right">&nbsp;<i class="far fa-comment"></i>&nbsp; comment</button></form>'+
+						'<div class="comment-box">'+
+						'<form class="form-group" onsubmit="add_comment(\''+ resource._id +'\');return false;">'+
+						'<input class="form-control" type="text" name="'+ resource._id +'" placeholder="Write a comment..."></input>'+
+						'<button type="submit" style="display:none"></button>'+
+						'</form>'+
+						'</div>' +
+						'<div class="resource-comments '+ resource._id +'">'+
+						output_comments +
+						'</div>'+
+						'</div>'+
+						'</div>'+
+						'</div>'+
+						'</div';
+					} else {
+							output += 'div class="resource-card" id="'+ resource._id +'">'+
+							'<div class="card" id="'+ resource._id +'">'+
+							'<div class="user-bar">'+
+							'<span class="float-left"><strong>'+ resource.username +'</strong></span>'+
+							'<span class="float-right"><strong>level 1</strong></span>'+
+							'</div>'+
+							'<a href="'+ resource.url +'"><img class="img-thumbnail card-img w-100 d-block img-thumbnail-override" src="'+ resource.image +'"></a>'+
+							'<div class="card-body"><h4 class="card-title">'+ resource.title +'</h4>'+
+							'<div class="resource-tags-container">'+ output_tag +'</div>'+
+							'<p class="card-text">'+ resource.description +'</p>' + 
+							'<div class="recommended-by-count"><p>'+ resource.recommended_by_count +' Recommends' + '</p></div>'+
+							'<div class="resource-actions-container">'+
+							'<form class="form-inline">'+ '<input type="hidden" name="_id" value="'+ resource._id +'" id="resource_id"></input>' +
+							'<button type="button" class="btn text-uppercase recommend-button" id="recommend" onclick="recommend_resource(\''+ resource._id +'\');return false;">'+
+							'<i class="far fa-thumbs-up"></i>&nbsp; Recommend</button></form>'+
+							'<form class="form-inline">'+'<button class="btn text-uppercase float-right">&nbsp;<i class="far fa-comment"></i>&nbsp; comment</button></form>'+
+							'<div class="comment-box">'+
+							'<form class="form-group" onsubmit="add_comment(\''+ resource._id +'\');return false;">'+
+							'<input class="form-control" type="text" name="'+ resource._id +'" placeholder="Write a comment..."></input>'+
+							'<button type="submit" style="display:none"></button>'+
+							'</form>'+
+							'<div class="resource-comments '+ resource._id +'">'+ output_comments +'</div>'+
+							'</div>' +
+							'</div>'+
+							'</div>'+
+							'</div>'+
+							'</div';
+					}
+
+					output_tag = '';
+					output_comments = '';
+				});
+				return res.send(output);
+			}
+		});
+});
+
+//GET /explore
+var sort_recommended_by = {'recommended_by_count': -1};
+router.get('/explore', mid.requiresLogin, function(req, res, next) {
+  var output = '';
+  var output_tag = '';
+  Resource.find({}).sort(sort_recommended_by)
+		.exec(function (error, resource) {
+			if(error) {
+				return next(error);
+			} else {
+				resource.forEach((resource) => {
+					//split tags
+					var tags = resource.tags.split(', ');
+					for(var i = 0; i<tags.length; i++) {
+						output_tag += '<button class="btn btn-primary resource-tag" type="button">'+ tags[i] +'</button>';
+					}
+
+					if(resource.recommended_by.includes(req.session.username)) {
+						output += 'div class="resource-card">'+
+						'<div class="card"><div class="user-bar">'+
+						'<span class="float-left"><strong>'+ resource.username +'</strong></span>'+
+						'<span class="float-right"><strong>level 1</strong></span></div>'+
+						'<a href="'+ resource.url +'"><img class="img-thumbnail card-img w-100 d-block img-thumbnail-override" src="'+ resource.image +'"></a>'+
+						'<div class="card-body"><h4 class="card-title">'+ resource.title +'</h4><div>'+ output_tag +'</div>'+
+						'<p class="card-text">'+ resource.description +'</p>' + '<div class="recommended-by-count"><p>'+ resource.recommended_by.length +
+						' Recommends' + '</p></div><div class="resource-actions-container">'+
 						'<form method="post" action="/not_recommend" class="form-inline">'+ '<input type="hidden" name="_id" value="'+ resource._id +'"></input>' +
 						'<button type="submit" class="btn text-uppercase"><i class="fas fa-thumbs-up"></i>&nbsp; Recommend</button></form><form class="form-inline"><button class="btn text-uppercase float-right">&nbsp;<i class="far fa-comment"></i>&nbsp; comment</button></form></div></div></div></div';
 					} else {
@@ -201,8 +349,8 @@ router.get('/feed', mid.requiresLogin, function(req, res, next) {
 
 					output_tag = '';
 				});
-				return res.render('feed', {
-					title: 'Resource Feed',
+				return res.render('explore', {
+					title: 'Resource Explore',
 					name: req.session.username,
 					all_resources: output
 				});
@@ -213,11 +361,12 @@ router.get('/feed', mid.requiresLogin, function(req, res, next) {
 //POST /recommend
 router.post('/recommend', function(req, res, next) {
 	if(req.body._id) {
-		Resource.findOneAndUpdate({_id:req.body._id}, {$push:{recommended_by:req.session.username}})
+		Resource.findOneAndUpdate({_id:req.body._id}, {$push:{recommended_by:req.session.username}, $inc: {recommended_by_count: 1}})
 			.exec(function (error, resource) {
 				if(error) {
 					return next(error);
 				} else {
+					req.app.io.emit('recommend', resource);
 					return res.redirect('/feed');
 				}
 			});
@@ -231,11 +380,50 @@ router.post('/recommend', function(req, res, next) {
 //POST /recommend
 router.post('/not_recommend', function(req, res, next) {
 	if(req.body._id) {
-		Resource.findOneAndUpdate({_id:req.body._id}, {$pop:{recommended_by:req.session.username}})
+		Resource.findOneAndUpdate({_id:req.body._id}, {$pop:{recommended_by:req.session.username}, $inc: {recommended_by_count: -1}})
 			.exec(function (error, resource) {
 				if(error) {
 					return next(error);
 				} else {
+					req.app.io.emit('not_recommend', resource);
+					return res.redirect('/feed');
+				}
+			});
+	} else {
+  	var err = new Error('Something went wrong!' + req.body._id);
+  	err.status = 400;
+  	return next(err);
+  }
+});
+
+//POST /add_comment
+router.post('/add_comment', function(req, res, next) {
+	if(req.body._comment && req.body._id) {
+
+		var time = new Date();
+
+		var comment = {
+			username: req.session.username,
+			content: req.body._comment,
+			timestamp: time
+		}
+
+		var send_back_comment = {
+			username: req.session.username,
+			content: req.body._comment,
+			timestamp: time,
+			id: req.body._id
+		}
+
+		console.log(comment);
+
+		Resource.findOneAndUpdate({_id:req.body._id}, {$push:{all_comments:comment}})
+			.exec(function (error, resource) {
+				if(error) {
+					return next(error);
+				} else {
+					console.log(resource);
+					req.app.io.emit('added_comment', send_back_comment);
 					return res.redirect('/feed');
 				}
 			});
@@ -256,4 +444,15 @@ router.get('/contact', function(req, res, next) {
   return res.render('contact', { title: 'Contact' });
 });
 
-module.exports = router;
+//module.exports = router;
+module.exports = function(io) {
+	//Socket.io
+	io.on('connection', function(socket) {
+		console.log('User has connected to Index');
+		socket.on('/', function() {
+			console.log('Application Running');
+		});
+	});
+
+	return router;
+}

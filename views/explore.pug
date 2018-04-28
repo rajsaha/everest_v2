@@ -1,0 +1,11 @@
+extends layout
+
+block content
+  .container
+    .col
+      div.explore-search
+        .input-group.mb-3
+          input.form-control(type='text', placeholder='Search', aria-label="Recipient's username", aria-describedby='basic-addon2')
+          .input-group-append
+            button.btn.btn-primary(type='button') Search
+  #{all_resources}
