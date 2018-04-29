@@ -30,15 +30,8 @@ var UserSchema = new mongoose.Schema({
 	},
 	all_collections: [
 			{
-				label: {
-					type: String, 
-					required: false, 
-					trim: true
-				}, 
-				resources: {
-					type: [String], 
-					required: false
-				}
+				title: String,
+				resources: [String] 
 			}
 		],
 	followers: [String],

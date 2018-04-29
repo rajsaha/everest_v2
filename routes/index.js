@@ -215,6 +215,26 @@ router.get('/feed-data', function(req, res, next) {
   var output = '';
   var output_tag = '';
   var output_comments = '';
+  var modal = '';
+  var collection_names = [];
+  var collection_select = '';
+
+	//Get all collection names in resource object
+	User.findOne({_id:req.session.userId})
+		.exec(function (error, user) {
+			if(error) {
+				return next(error);
+			} else {
+				for(var i=0; i<user.all_collections.length; i++) {
+					collection_select += '<option value="'+ user.all_collections[i].title +'">'+ user.all_collections[i].title +'</option>';
+				}
+
+				collection_select = collection_select;
+
+				console.log(collection_select);
+			}
+	});
+
   Resource.find({}).sort(sort)
 		.exec(function (error, resource) {
 			if(error) {
@@ -224,10 +244,13 @@ router.get('/feed-data', function(req, res, next) {
 					//split tags
 					var tags = resource.tags.split(', ');
 					var comments = resource.all_comments;
+
+					//Get all tags in resource object
 					for(var i = 0; i<tags.length; i++) {
 						output_tag += '<button class="btn btn-primary resource-tag" type="button">'+ tags[i] +'</button>';
 					}
 
+					//Get all comments in resource object
 					for(var i=0; i<comments.length; i++) {
 						output_comments += '<div class="comment">'+
 						'<span class="username"><strong>'+ comments[i].username + ' ' +'</strong></span>'+
@@ -235,6 +258,39 @@ router.get('/feed-data', function(req, res, next) {
 						'<p class="comment-time">'+ comments[i].timestamp +'</p>'+
 						'</div>';
 					}
+
+					modal = '<div id="addToCollection'+ resource._id +'" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="addToCollection" aria-hidden="true">'+
+					'<div class="modal-dialog" role="document">'+
+					'<div class="modal-content">'+
+					'<div class="modal-header">'+
+					'<h5 class="modal-title">Add to Collection</h5>'+
+					'<button type="button" class="close" data-dismiss="modal" aria-label="Close">'+
+					'<span aria-hidden="true">&times;</span>'+
+					'</button>'+
+					'</div>'+
+					'<div class="modal-body">'+
+					'<div class="text-center">'+
+					'<div class="error_'+resource._id+'">'+
+					'</div>'+
+					'<img src="'+resource.image+'" class="img-fluid"></img>'+
+					'</div>'+
+					'<div>'+
+					'<h4>Choose a Collection</h4>'+
+					'<form class="form-group">'+
+					'<input class="form-control collection-inputbox" name="collection_label_' + resource._id +'" placeholder="Create a new collection"></input>'+
+					'<select class="custom-select collection-dropdown" name="collection_select_'+ resource._id +'">' + 
+					collection_select+
+					'</select>'+
+					'</form>'+
+					'</div>'+
+					'</div>'+
+					'<div class="modal-footer">'+
+					'<button type="button" class="btn btn-secondary switch_btn_'+ resource._id +'" onclick="switch_modal_form(\''+ resource._id + '\')">Create New Collection</button>'+
+					'<button type="button" class="btn btn-primary save_btn_'+ resource._id +'" onclick="addToExisting(\''+ resource._id + '\')">Save</button>'+
+					'</div>'+
+					'</div>'+
+					'</div>'+
+					'</div>';
 
 					//comment_box goes in the empty space
 					if(resource.recommended_by.includes(req.session.username)) {
@@ -247,6 +303,7 @@ router.get('/feed-data', function(req, res, next) {
 
 						output += 'div class="resource-card">'+
 						'<div class="card" id="'+ resource._id +'">'+
+						modal +
 						'<div class="user-bar">'+
 						'<span class="float-left"><strong>'+ resource.username +'</strong></span>'+
 						'<span class="float-right"><strong>level 1</strong></span>'+
@@ -259,10 +316,12 @@ router.get('/feed-data', function(req, res, next) {
 						'<div class="resource-actions-container">'+
 						'<form class="form-inline">'+
 						'<input type="hidden" name="_id" value="'+ resource._id +'" id="resource_id"></input>' +
-						'<button type="button" class="btn text-uppercase recommend-button" id="not_recommend" onclick="un_recommend_resource(\''+ resource._id +'\');return false;"><i class="fas fa-thumbs-up"></i>&nbsp; Recommend</button>'+
+						'<button type="button" class="btn text-uppercase recommend-button" id="not_recommend" onclick="un_recommend_resource(\''+ resource._id +'\');return false;" style="margin-right: 10px;"><i class="fas fa-thumbs-up"></i>&nbsp; Recommend</button>'+
 						'</form>'+
 						'<form class="form-inline">'+
-						'<button type="button" class="btn text-uppercase float-right" data-comment=\"'+ resource._id +'\" onclick="load_comments_request(\''+ resource._id +'\');return false;">&nbsp;<i class="far fa-comment"></i>&nbsp; comment</button></form>'+
+						'<button type="button" class="btn text-uppercase" data-comment=\"'+ resource._id +'\" onclick="load_comments_request(\''+ resource._id +'\');return false;">&nbsp;<i class="far fa-comment"></i>&nbsp; comment</button>'+
+						'<button data-toggle="modal" data-target="#addToCollection'+resource._id+'" type="button" class="btn text-uppercase float-right"><i class="fas fa-plus"></i></button>'+
+						'</form>'+
 						'<div class="comment-box comment_box'+ resource._id +'">'+
 
 						'</div>'+
@@ -283,6 +342,7 @@ router.get('/feed-data', function(req, res, next) {
 
 							output += 'div class="resource-card">'+
 						'<div class="card" id="'+ resource._id +'">'+
+						modal +
 						'<div class="user-bar">'+
 						'<span class="float-left"><strong>'+ resource.username +'</strong></span>'+
 						'<span class="float-right"><strong>level 1</strong></span>'+
@@ -295,10 +355,12 @@ router.get('/feed-data', function(req, res, next) {
 						'<div class="resource-actions-container">'+
 						'<form class="form-inline">'+
 						'<input type="hidden" name="_id" value="'+ resource._id +'" id="resource_id"></input>' +
-						'<button type="button" class="btn text-uppercase recommend-button" id="recommend" onclick="recommend_resource(\''+ resource._id +'\');return false;"><i class="far fa-thumbs-up"></i>&nbsp; Recommend</button>'+
+						'<button type="button" class="btn text-uppercase recommend-button" id="recommend" onclick="recommend_resource(\''+ resource._id +'\');return false;" style="margin-right: 10px;"><i class="far fa-thumbs-up"></i>&nbsp; Recommend</button>'+
 						'</form>'+
 						'<form class="form-inline">'+
-						'<button type="button" class="btn text-uppercase float-right" data-comment=\"'+ resource._id +'\" onclick="load_comments_request(\''+ resource._id +'\');return false;">&nbsp;<i class="far fa-comment"></i>&nbsp; comment</button></form>'+
+						'<button type="button" class="btn text-uppercase" data-comment=\"'+ resource._id +'\" onclick="load_comments_request(\''+ resource._id +'\');return false;">&nbsp;<i class="far fa-comment"></i>&nbsp; comment</button>'+
+						'<button data-toggle="modal" data-target="#addToCollection'+ resource._id +'" type="button" class="btn text-uppercase float-right"><i class="fas fa-plus"></i></button>'+
+						'</form>'+
 						'<div class="comment-box comment_box'+ resource._id +'">'+
 
 						'</div>'+
@@ -410,7 +472,7 @@ router.post('/not_recommend', function(req, res, next) {
 router.post('/add_comment', function(req, res, next) {
 	if(req.body._comment && req.body._id) {
 
-		var time = new Date().toLocaleString();
+		var time = new Date();
 
 		var comment = {
 			username: req.session.username,
@@ -442,6 +504,56 @@ router.post('/add_comment', function(req, res, next) {
   	err.status = 400;
   	return next(err);
   }
+});
+
+//POST /add_new_collection
+router.post('/add_new_collection', function(req, res, next) {
+	if(req.body._label && req.body._id) {
+		console.log(req.body._label + ' ' + req.body._id);
+		var collection_label = {title: req.body._label}
+		var collection_label_resource = {resources: req.body._id}
+		var resources_array = [req.body._id];
+
+		var collection_object = {title: req.body._label, resources:req.body._id}
+		User.findOneAndUpdate({_id:req.session.userId}, {$push: {all_collections:collection_object}})
+			.exec(function(error, user) {
+				if(error) {
+					return next(error);
+				} else {
+					console.log('Step 1 Done');
+				}
+			});
+	}
+});
+
+//POST /add_resource_to_existing_collection
+router.post('/add_to_existing', function(req, res, next) {
+	if(req.body._id && req.body._title) {
+		User.findOne({_id:req.session.userId})
+			.exec(function(error, user) {
+				if(error) {
+					return next(error);
+				} else {
+					for(var i=0; i<user.all_collections.length; i++) {
+						if(user.all_collections[i].title === req.body._title) {
+							for(var j=0;j<user.all_collections[i].resources.length;j++) {
+								console.log(user.all_collections[i].resources[j]);
+								if(user.all_collections[i].resources[j] === req.body._id) {
+									req.app.io.emit('resource_already_exists', req.body._id);
+									return;
+								}
+							}
+
+							user.all_collections[i].resources.push(req.body._id);
+							user.save(function(err) {
+								err != null ? console.log(err):console.log('Data updated');
+								req.app.io.emit('resource_addition_successful', 'success');
+							});
+						}
+					}
+				}
+			});
+	}
 });
 
 //GET /get_comments

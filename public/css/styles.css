@@ -105,3 +105,15 @@
 .add-comment-form {
   padding-top:15px;
 }
+
+.margin-right-to-button {
+  margin-right:4px;
+}
+
+.collection-inputbox {
+  display:none;
+}
+
+.collection-dropdown {
+  display:inherit;
+}

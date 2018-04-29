@@ -32,11 +32,13 @@ function load_comments(resource) {
 	var comments = '';
 	console.log(resource);
 	console.log(resource[0]._id);
+	var time = '';
 	for(var i=0; i<resource[0].all_comments.length; i++) {
+		time = moment(resource[0].all_comments[i].timestamp).format("MMM DD, YY | h a");
 		comments += '<div class="comment">'+
 		'<span class="username"><strong>'+ resource[0].all_comments[i].username + ' ' +'</strong></span>'+
 		'<span class="comment-content">'+ resource[0].all_comments[i].content +'</span>'+
-		'<p class="comment-time">'+ resource[0].all_comments[i].timestamp +'</p>'+
+		'<p class="comment-time">'+ time +'</p>'+
 		'</div>';
 	}
 
@@ -82,20 +84,68 @@ function reloadResource_not_recommend(resource) {
 	console.log(resource);
 }
 
+function add_new_collection(resource_id) {
+	var label = $("input[name='collection_label_" + resource_id +"']").val();
+	var collection_object = {_label: label, _id: resource_id};
+	$.post('/add_new_collection', collection_object);
+	$('#addToCollection'+resource_id).modal('hide');
+}
+
+function addToExisting(resource_id) {
+	var selection = $("select[name='collection_select_" + resource_id +"']").val();
+	var resource_object = {_title:selection, _id: resource_id};
+	$.post('/add_to_existing', resource_object);
+}
+
+function showErrorDialog(resource_id) {
+	$(".error_"+resource_id).append('<div class="alert alert-warning">You\'ve already added that resource to this collection!</div>');
+	setTimeout(function() {
+		$(".error_"+resource_id).html('');
+	}, 3000);
+}
+
+function checkIfSuccess(message) {
+	if(message === 'success') {
+		$('#addToCollection'+resource_id).modal('hide');
+	} else {
+		showErrorDialog(resource_id);
+	}
+}
+
+var modal_switch = true;
+function switch_modal_form(resource_id) {
+	if(modal_switch == true) {
+		$("select[name='collection_select_" + resource_id +"']").css('display','none');
+		$("input[name='collection_label_" + resource_id +"']").css('display','inherit');
+		$(".switch_btn_"+resource_id).text("Choose From Existing Collections");
+		$(".save_btn_"+resource_id).attr("onclick", "add_new_collection('" + resource_id + "')");
+		modal_switch = false;
+	} else {
+		$("select[name='collection_select_" + resource_id +"']").css('display','inherit');
+		$("input[name='collection_label_" + resource_id +"']").css('display','none');
+		$(".switch_btn_"+resource_id).text("Create New Collection");
+		$(".save_btn_"+resource_id).attr("onclick", "addToExisting('" + resource_id + "')");
+		modal_switch = true;
+	}
+}
+
 socket.on('recommend', reloadResource_recommend);
 socket.on('not_recommend', reloadResource_not_recommend);
 socket.on('added_comment', appendComment);
 socket.on('load_comments', load_comments);
+socket.on('resource_already_exists', showErrorDialog);
+socket.on('resource_addition_successful', checkIfSuccess);
 
 function test(){
   console.log('socket io test');
 }
 
 function appendComment(resource) {
+	var time = moment(resource.timestamp).format("MMM DD, YY | h:m:s");
 	var comment = '<div class="comment">'+
 	'<span class="username"><strong>'+ resource.username + ' ' +'</strong></span>'+
 	'<span class="comment-content">'+ resource.content +'</span>'+
-	'<p class="comment-time">'+ resource.timestamp +'</p>'+
+	'<p class="comment-time">'+ time +'</p>'+
 	'</div>';
 	$("."+ resource.id).append(comment);
 	console.log('Added ' + comment);
