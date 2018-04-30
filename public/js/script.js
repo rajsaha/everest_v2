@@ -95,6 +95,7 @@ function addToExisting(resource_id) {
 	var selection = $("select[name='collection_select_" + resource_id +"']").val();
 	var resource_object = {_title:selection, _id: resource_id};
 	$.post('/add_to_existing', resource_object);
+	$('#addToCollection'+resource_id).modal('hide');
 }
 
 function showErrorDialog(resource_id) {
@@ -129,12 +130,30 @@ function switch_modal_form(resource_id) {
 	}
 }
 
+function update_user_details() {
+	var user_fullname = $("input[name='user_fullname']").val();
+	var user_email = $("input[name='user_email']").val();
+	var user_object = {name: user_fullname, email: user_email};
+	$.post('/update_user_details', user_object);
+}
+
+function showConfirmation(user) {
+	$(".error-user-profile").append('<div class="alert alert-info">Record updated</div>');
+	setTimeout(function() {
+		$(".error-user-profile").html('');
+	}, 3000);
+}
+
 socket.on('recommend', reloadResource_recommend);
 socket.on('not_recommend', reloadResource_not_recommend);
 socket.on('added_comment', appendComment);
 socket.on('load_comments', load_comments);
 socket.on('resource_already_exists', showErrorDialog);
 socket.on('resource_addition_successful', checkIfSuccess);
+socket.on('updated_name_email', showConfirmation);
+socket.on('updated_name', showConfirmation);
+socket.on('updated_email', showConfirmation);
+//socket.on('load_feed', getFeed);
 
 function test(){
   console.log('socket io test');
@@ -159,5 +178,4 @@ $(document).ready(function() {
     $(() => {
         getFeed();
     });
-
 });

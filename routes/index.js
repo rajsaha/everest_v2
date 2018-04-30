@@ -16,7 +16,7 @@ router.get('/profile', mid.requiresLogin, function(req, res, next) {
 					title: 'Profile',
 					name: user.name,
 					email: user.email,
-					collection: user.all_collections,
+					collections: user.all_collections,
 					followers: user.followers
 				});
 			}
@@ -58,6 +58,7 @@ router.post('/login', function(req, res, next) {
 			} else {
 				req.session.userId = user._id;
 				req.session.username = user.username;
+				//req.app.io.emit('load_feed', 'logged_in');
 				return res.redirect('/feed');
 			}
 		});
@@ -219,7 +220,8 @@ router.get('/feed-data', function(req, res, next) {
   var collection_names = [];
   var collection_select = '';
 
-	//Get all collection names in resource object
+  if(req.session.userId) {
+  	//Get all collection names in resource object
 	User.findOne({_id:req.session.userId})
 		.exec(function (error, user) {
 			if(error) {
@@ -235,7 +237,7 @@ router.get('/feed-data', function(req, res, next) {
 			}
 	});
 
-  Resource.find({}).sort(sort)
+	  Resource.find({}).sort(sort)
 		.exec(function (error, resource) {
 			if(error) {
 				return next(error);
@@ -376,6 +378,7 @@ router.get('/feed-data', function(req, res, next) {
 				return res.send(output);
 			}
 		});
+  }
 });
 
 //GET /explore
@@ -523,6 +526,40 @@ router.post('/add_new_collection', function(req, res, next) {
 					console.log('Step 1 Done');
 				}
 			});
+	}
+});
+
+//POST /update_user_details
+router.post('/update_user_details', function(req, res, next) {
+	if(req.body.name != '' && req.body.email != '') {
+		User.findOneAndUpdate({_id:req.session.userId},{name: req.body.name, email: req.body.email})
+			.exec(function(error, user) {
+				if(error) {
+					return next(error);
+				} else {
+					req.app.io.emit('updated_name_email', user);
+				}
+			});
+	} else if (req.body.name != '') {
+		User.findOneAndUpdate({_id:req.session.userId},{name: req.body.name})
+			.exec(function(error, user) {
+				if(error) {
+					return next(error);
+				} else {
+					req.app.io.emit('updated_name', user);
+				}
+			});
+
+	} else if (req.body.email != '') {
+		User.findOneAndUpdate({_id:req.session.userId},{email: req.body.email})
+			.exec(function(error, user) {
+				if(error) {
+					return next(error);
+				} else {
+					req.app.io.emit('updated_email', user);
+				}
+			});
+
 	}
 });
 

@@ -17,11 +17,14 @@ block content
 							form
 								.form-group
 									label(for='exampleInputEmail1') Name
-									input.form-control(type='email', aria-describedby='emailHelp', placeholder=name)
+									input.form-control(type='text', aria-describedby='emailHelp', placeholder=name, name='user_fullname')
 								.form-group
 									label(for='exampleInputPassword1') Email
-									input.form-control(type='password', placeholder=email)
-								button.btn.btn-primary(type='submit') Update
+									input.form-control(type='email', placeholder=email, name='user_email')
+								button.btn.btn-primary(type='button' onclick='update_user_details()') Update
 						#v-pills-profile.tab-pane.fade(role='tabpanel', aria-labelledby='v-pills-profile-tab') Collections shown here
 						#v-pills-messages.tab-pane.fade(role='tabpanel', aria-labelledby='v-pills-messages-tab') Followers shown here
 						#v-pills-settings.tab-pane.fade(role='tabpanel', aria-labelledby='v-pills-settings-tab') Various settings regarding personal info
+		.row
+			.col-md-12
+				.error-user-profile
