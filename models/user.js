@@ -1,5 +1,5 @@
 var mongoose = require('mongoose');
-var bcrypt = require('bcrypt');
+var bcrypt = require('bcryptjs');
 
 var UserSchema = new mongoose.Schema({
 	name: {
@@ -31,13 +31,14 @@ var UserSchema = new mongoose.Schema({
 	all_collections: [
 			{
 				title: String,
-				resources: [String] 
+				resources: [String]
 			}
 		],
 	followers: [String],
 	recommends: [String]
 });
 
+//authenticate input against database documents
 //authenticate input against database documents
 UserSchema.statics.authenticate = function(username, password, callback) {
 	User.findOne ({username: username})
@@ -61,16 +62,31 @@ UserSchema.statics.authenticate = function(username, password, callback) {
 }
 
 //hash password before saving
+// var salt = bcrypt.genSaltSync(10);
+// var hash = bcrypt.hashSync("B4c0/\/", salt);
 UserSchema.pre('save', function(next) {
-	var user = this;
-	bcrypt.hash(user.password, 10, function(err, hash) {
-		if (err) {
+	const user = this;
+	// bcrypt.hash(user.password, 10, function(err, hash) {
+	// 	if (err) {
+	// 		return next(err);
+	// 	}
+  //
+	// 	user.password = hash;
+	// 	next();
+	// })
+	bcrypt.genSalt(10, function(err, salt) {
+		if(err) {
 			return next(err);
 		}
-
-		user.password = hash;
-		next();
-	})
+		bcrypt.hash(user.password, salt, function(err, hash) {
+			if(err) {
+				return next(err);
+			}
+			user.password = hash;
+			console.log('Testing: ' + user.password);
+			next();
+		});
+	});
 });
 
 var User = mongoose.model('User', UserSchema);

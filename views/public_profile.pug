@@ -1,0 +1,21 @@
+extends layout
+
+block content
+  .container
+    .row
+      .col-md-6.profile-box
+        h2 Personal Details
+        form
+          .form-group
+            h3 #{public_username} 
+            label Name
+            p #{public_name}
+            label Email
+            p #{public_email}
+      .col-md-6.profile-box
+        h2 Collections
+        .collections
+          #{collections}
+    .row
+      .col-md-12
+        .error-user-profile

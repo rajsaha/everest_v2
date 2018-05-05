@@ -47,7 +47,7 @@ function load_comments(resource) {
 									'<button type="submit" style="display:none"></button>'+
 								'</form>'+
 								'<div class="resource-comments '+ resource[0]._id + '">' + comments + '</div>';
-	
+
 	var targetClass = ".comment_box" + resource[0]._id;
 	console.log(targetClass);
 	$(targetClass).append(input_box_and_comments);
@@ -144,6 +144,16 @@ function showConfirmation(user) {
 	}, 3000);
 }
 
+function load_user_profile(username) {
+  console.log('Going to profile: ' + username);
+  var user_object = {_username: username};
+  $.post('/public_profile', user_object);
+}
+
+function goto_public_profile() {
+  window.location.href = '/public_profile';
+}
+
 socket.on('recommend', reloadResource_recommend);
 socket.on('not_recommend', reloadResource_not_recommend);
 socket.on('added_comment', appendComment);
@@ -153,6 +163,7 @@ socket.on('resource_addition_successful', checkIfSuccess);
 socket.on('updated_name_email', showConfirmation);
 socket.on('updated_name', showConfirmation);
 socket.on('updated_email', showConfirmation);
+socket.on('goto_public_profile', goto_public_profile);
 //socket.on('load_feed', getFeed);
 
 function test(){
