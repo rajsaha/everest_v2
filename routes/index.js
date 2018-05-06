@@ -322,7 +322,7 @@ router.get('/feed-data', function(req, res, next) {
                         collection_select += '<option value="' + user.all_collections[i].title + '">' + user.all_collections[i].title + '</option>';
                     }
 
-                    Resource.find({}).sort(sort)
+                    Resource.find({username:{$in:user.followers}}).sort(sort)
                         .exec(function(error, resource) {
                             if (error) {
                                 return next(error);
@@ -334,7 +334,7 @@ router.get('/feed-data', function(req, res, next) {
 
                                     //Get all tags in resource object
                                     for (var i = 0; i < tags.length; i++) {
-                                        output_tag += '<button class="btn btn-primary resource-tag" type="button">' + tags[i] + '</button>';
+                                        output_tag += '<button onclick="search_by_tag(\'' + tags[i] + '\')" class="btn btn-primary resource-tag" type="button">' + tags[i] + '</button>';
                                     }
 
                                     //Get all comments in resource object
@@ -389,7 +389,7 @@ router.get('/feed-data', function(req, res, next) {
                                             '<div class="resource-comments ' + resource._id + '">' + output_comments + '</div>';
 
                                         output += 'div class="resource-card">' +
-                                            '<div class="card" id="' + resource._id + '">' +
+                                            '<div class="cards" id="' + resource._id + '">' +
                                             modal +
                                             '<div class="user-bar">' +
                                             '<span onclick="load_user_profile(\'' + resource.username + '\')" class="float-left"><strong>' + resource.username + '</strong></span></form>' +
@@ -428,7 +428,7 @@ router.get('/feed-data', function(req, res, next) {
                                             '</div>';
 
                                         output += 'div class="resource-card">' +
-                                            '<div class="card" id="' + resource._id + '">' +
+                                            '<div class="cards" id="' + resource._id + '">' +
                                             modal +
                                             '<div class="user-bar">' +
                                             '<span onclick="load_user_profile(\'' + resource.username + '\')" class="float-left"><strong>' + resource.username + '</strong></span>' +
@@ -488,8 +488,8 @@ router.get('/feed-data-followers', async (req, res, next) => {
       }
 
       //Get all Resources
-      for(var i=0; i<user.followers.length;i++) {
-        let resource = await Resource.find({username:user.followers[i]});
+      for(var i=user.followers.length; i>=0;i--) {
+        let resource = await Resource.find({username:user.followers[i]}).sort(sort);
         resource.forEach((resource) => {
           //split tags
           var tags = resource.tags.split(', ');
@@ -497,7 +497,7 @@ router.get('/feed-data-followers', async (req, res, next) => {
 
           //Get all tags in resource object
           for (var i = 0; i < tags.length; i++) {
-              output_tag += '<button class="btn btn-primary resource-tag" type="button">' + tags[i] + '</button>';
+              output_tag += '<button onclick="search_by_tag(\''+ tags[i] + '\')" class="btn btn-primary resource-tag" type="button">' + tags[i] + '</button>';
           }
 
           //Get all comments in resource object
@@ -632,56 +632,347 @@ router.get('/feed-data-followers', async (req, res, next) => {
   }
 });
 
+//POST /search_by_tag
+var current_tag = '';
+router.post('/search_by_tag', function(req, res, next) {
+  if(req.body._tag) {
+    current_tag = req.body._tag;
+    req.app.io.emit('search_tag','success');
+  } else {
+    var err = new Error('Something went wrong!' + req.body._id);
+    err.status = 400;
+    return next(err);
+  }
+});
+
+//GET /search_by_tag
+router.get('/search_by_tag', function(req, res, next) {
+  var output = '';
+  var output_tag = '';
+  var output_comments = '';
+  var modal = '';
+  var collection_names = [];
+  var collection_select = '';
+  if(current_tag) {
+    Resource.find({tags:{$regex: current_tag}}).sort(sort_recommended_by)
+      .exec(function(error, resource) {
+        if(error) {
+          return next(error);
+        } else {
+          resource.forEach((resource) => {
+              //split tags
+              var tags = resource.tags.split(', ');
+              var comments = resource.all_comments;
+
+              //Get all tags in resource object
+              for (var i = 0; i < tags.length; i++) {
+                  output_tag += '<button onclick="search_by_tag(\'' + tags[i] + '\')" class="btn btn-primary resource-tag" type="button">' + tags[i] + '</button>';
+              }
+
+              //Get all comments in resource object
+              for (var i = 0; i < comments.length; i++) {
+                  output_comments += '<div class="comment">' +
+                      '<span class="username"><strong>' + comments[i].username + ' ' + '</strong></span>' +
+                      '<span class="comment-content">' + comments[i].content + '</span>' +
+                      '<p class="comment-time">' + comments[i].timestamp + '</p>' +
+                      '</div>';
+              }
+
+              modal = '<div id="addToCollection' + resource._id + '" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="addToCollection" aria-hidden="true">' +
+                  '<div class="modal-dialog" role="document">' +
+                  '<div class="modal-content">' +
+                  '<div class="modal-header">' +
+                  '<h5 class="modal-title">Add to Collection</h5>' +
+                  '<button type="button" class="close" data-dismiss="modal" aria-label="Close">' +
+                  '<span aria-hidden="true">&times;</span>' +
+                  '</button>' +
+                  '</div>' +
+                  '<div class="modal-body">' +
+                  '<div class="text-center">' +
+                  '<div class="error_' + resource._id + '">' +
+                  '</div>' +
+                  '<img src="' + resource.image + '" class="img-fluid"></img>' +
+                  '</div>' +
+                  '<div>' +
+                  '<h4>Choose a Collection</h4>' +
+                  '<form class="form-group">' +
+                  '<input class="form-control collection-inputbox" name="collection_label_' + resource._id + '" placeholder="Create a new collection"></input>' +
+                  '<select class="custom-select collection-dropdown" name="collection_select_' + resource._id + '">' +
+                  collection_select +
+                  '</select>' +
+                  '</form>' +
+                  '</div>' +
+                  '</div>' +
+                  '<div class="modal-footer">' +
+                  '<button type="button" class="btn btn-secondary switch_btn_' + resource._id + '" onclick="switch_modal_form(\'' + resource._id + '\')">Create New Collection</button>' +
+                  '<button type="button" class="btn btn-primary save_btn_' + resource._id + '" onclick="addToExisting(\'' + resource._id + '\')">Save</button>' +
+                  '</div>' +
+                  '</div>' +
+                  '</div>' +
+                  '</div>';
+
+              //comment_box goes in the empty space
+              if (resource.recommended_by.includes(req.session.username)) {
+                  var comment_box =
+                      '<form class="form-group" onsubmit="add_comment(\'' + resource._id + '\');return false;">' +
+                      '<input class="form-control" type="text" name="' + resource._id + '" placeholder="Write a comment..."></input>' +
+                      '<button type="submit" style="display:none"></button>' +
+                      '</form>' +
+                      '<div class="resource-comments ' + resource._id + '">' + output_comments + '</div>';
+
+                  output += 'div class="resource-card">' +
+                      '<div class="cards" id="' + resource._id + '">' +
+                      modal +
+                      '<div class="user-bar">' +
+                      '<span onclick="load_user_profile(\'' + resource.username + '\')" class="float-left"><strong>' + resource.username + '</strong></span></form>' +
+                      '<span class="float-right"><strong>level 1</strong></span>' +
+                      '</div>' +
+                      '<a href="' + resource.url + '"><img class="img-thumbnail card-img w-100 d-block img-thumbnail-override" src="' + resource.image + '"></a>' +
+                      '<div class="card-body"><h4 class="card-title">' + resource.title + '</h4>' +
+                      '<div class="resource-tags-container">' + output_tag + '</div>' +
+                      '<p class="card-text">' + resource.description + '</p>' +
+                      '<div class="recommended-by-count"><p>' + resource.recommended_by_count + ' Recommends' + '</p></div>' +
+                      '<div class="resource-actions-container">' +
+                      '<form class="form-inline">' +
+                      '<input type="hidden" name="_id" value="' + resource._id + '" id="resource_id"></input>' +
+                      '<button type="button" class="btn text-uppercase recommend-button" id="not_recommend" onclick="un_recommend_resource(\'' + resource._id + '\');return false;" style="margin-right: 10px;"><i class="fas fa-thumbs-up"></i>&nbsp; Recommend</button>' +
+                      '</form>' +
+                      '<form class="form-inline">' +
+                      '<button type="button" class="btn text-uppercase" data-comment=\"' + resource._id + '\" onclick="load_comments_request(\'' + resource._id + '\');return false;">&nbsp;<i class="far fa-comment"></i>&nbsp; comment</button>' +
+                      '<button data-toggle="modal" data-target="#addToCollection' + resource._id + '" type="button" class="btn text-uppercase float-right"><i class="fas fa-plus"></i></button>' +
+                      '</form>' +
+                      '<div class="comment-box comment_box' + resource._id + '">' +
+
+                      '</div>' +
+                      '</div>' +
+                      '</div>' +
+                      '</div>' +
+                      '</div';
+              } else {
+                  var comment_box = '<div class="comment-box">' +
+                      '<form class="form-group" onsubmit="add_comment(\'' + resource._id + '\');return false;">' +
+                      '<input class="form-control" type="text" name="' + resource._id + '" placeholder="Write a comment..."></input>' +
+                      '<button type="submit" style="display:none"></button>' +
+                      '</form>' +
+                      '</div>' +
+                      '<div class="resource-comments ' + resource._id + '">' +
+                      output_comments +
+                      '</div>';
+
+                  output += 'div class="resource-card">' +
+                      '<div class="cards" id="' + resource._id + '">' +
+                      modal +
+                      '<div class="user-bar">' +
+                      '<span onclick="load_user_profile(\'' + resource.username + '\')" class="float-left"><strong>' + resource.username + '</strong></span>' +
+                      '<span class="float-right"><strong>level 1</strong></span>' +
+                      '</div>' +
+                      '<a href="' + resource.url + '"><img class="img-thumbnail card-img w-100 d-block img-thumbnail-override" src="' + resource.image + '"></a>' +
+                      '<div class="card-body"><h4 class="card-title">' + resource.title + '</h4>' +
+                      '<div class="resource-tags-container">' + output_tag + '</div>' +
+                      '<p class="card-text">' + resource.description + '</p>' +
+                      '<div class="recommended-by-count"><p>' + resource.recommended_by_count + ' Recommends' + '</p></div>' +
+                      '<div class="resource-actions-container">' +
+                      '<form class="form-inline">' +
+                      '<input type="hidden" name="_id" value="' + resource._id + '" id="resource_id"></input>' +
+                      '<button type="button" class="btn text-uppercase recommend-button" id="recommend" onclick="recommend_resource(\'' + resource._id + '\');return false;" style="margin-right: 10px;"><i class="far fa-thumbs-up"></i>&nbsp; Recommend</button>' +
+                      '</form>' +
+                      '<form class="form-inline">' +
+                      '<button type="button" class="btn text-uppercase" data-comment=\"' + resource._id + '\" onclick="load_comments_request(\'' + resource._id + '\');return false;">&nbsp;<i class="far fa-comment"></i>&nbsp; comment</button>' +
+                      '<button data-toggle="modal" data-target="#addToCollection' + resource._id + '" type="button" class="btn text-uppercase float-right"><i class="fas fa-plus"></i></button>' +
+                      '</form>' +
+                      '<div class="comment-box comment_box' + resource._id + '">' +
+
+                      '</div>' +
+                      '</div>' +
+                      '</div>' +
+                      '</div>' +
+                      '</div';
+              }
+
+              output_tag = '';
+              output_comments = '';
+          });
+
+          return res.render('search_by_tag', {title: 'Search by Tag', name: req.session.username, output:output});
+        }
+      });
+  } else {
+    return res.redirect('/feed');
+  }
+});
+
 //GET /explore
+router.get('/explore', function(req, res, next) {
+  return res.render('explore', {title: 'Explore', name: req.session.name});
+});
+
+//GET /explore-data
 var sort_recommended_by = { 'recommended_by_count': -1 };
-router.get('/explore', mid.requiresLogin, function(req, res, next) {
+router.get('/explore-data', function(req, res, next) {
     var output = '';
     var output_tag = '';
-    Resource.find({}).sort(sort_recommended_by)
-        .exec(function(error, resource) {
-            if (error) {
-                return next(error);
-            } else {
-                resource.forEach((resource) => {
-                    //split tags
-                    var tags = resource.tags.split(', ');
-                    for (var i = 0; i < tags.length; i++) {
-                        output_tag += '<button class="btn btn-primary resource-tag" type="button">' + tags[i] + '</button>';
+    var output_comments = '';
+    var modal = '';
+    var collection_names = [];
+    var collection_select = '';
+
+    if (req.session.userId) {
+        //Get all collection names in resource object
+        User.findOne({ _id: req.session.userId })
+            .exec(function(error, user) {
+                if (error) {
+                    return next(error);
+                } else {
+                    for (var i = 0; i < user.all_collections.length; i++) {
+                        collection_select += '<option value="' + user.all_collections[i].title + '">' + user.all_collections[i].title + '</option>';
                     }
 
-                    if (resource.recommended_by.includes(req.session.username)) {
-                        output += 'div class="resource-card">' +
-                            '<div class="card"><div class="user-bar">' +
-                            '<span class="float-left"><strong>' + resource.username + '</strong></span>' +
-                            '<span class="float-right"><strong>level 1</strong></span></div>' +
-                            '<a href="' + resource.url + '"><img class="img-thumbnail card-img w-100 d-block img-thumbnail-override" src="' + resource.image + '"></a>' +
-                            '<div class="card-body"><h4 class="card-title">' + resource.title + '</h4><div>' + output_tag + '</div>' +
-                            '<p class="card-text">' + resource.description + '</p>' + '<div class="recommended-by-count"><p>' + resource.recommended_by.length +
-                            ' Recommends' + '</p></div><div class="resource-actions-container">' +
-                            '<form method="post" action="/not_recommend" class="form-inline">' + '<input type="hidden" name="_id" value="' + resource._id + '"></input>' +
-                            '<button type="submit" class="btn text-uppercase"><i class="fas fa-thumbs-up"></i>&nbsp; Recommend</button></form><form class="form-inline"><button class="btn text-uppercase float-right">&nbsp;<i class="far fa-comment"></i>&nbsp; comment</button></form></div></div></div></div';
-                    } else {
-                        output += 'div class="resource-card">' +
-                            '<div class="card"><div class="user-bar">' +
-                            '<span class="float-left"><strong>' + resource.username + '</strong></span>' +
-                            '<span class="float-right"><strong>level 1</strong></span></div>' +
-                            '<a href="' + resource.url + '"><img class="img-thumbnail card-img w-100 d-block img-thumbnail-override" src="' + resource.image + '"></a>' +
-                            '<div class="card-body"><h4 class="card-title">' + resource.title + '</h4><div>' + output_tag + '</div>' +
-                            '<p class="card-text">' + resource.description + '</p>' + '<div class="recommended-by-count"><p>' + resource.recommended_by.length +
-                            ' Recommends' + '</p></div><div class="resource-actions-container">' +
-                            '<form method="post" action="/recommend" class="form-inline">' + '<input type="hidden" name="_id" value="' + resource._id + '"></input>' +
-                            '<button type="submit" class="btn text-uppercase"><i class="far fa-thumbs-up"></i>&nbsp; Recommend</button></form><form class="form-inline"><button class="btn text-uppercase float-right">&nbsp;<i class="far fa-comment"></i>&nbsp; comment</button></form></div></div></div></div';
-                    }
+                    Resource.find({username:{$in:user.followers}}).sort(sort_recommended_by)
+                        .exec(function(error, resource) {
+                            if (error) {
+                                return next(error);
+                            } else {
+                                resource.forEach((resource) => {
+                                    //split tags
+                                    var tags = resource.tags.split(', ');
+                                    var comments = resource.all_comments;
 
-                    output_tag = '';
-                });
-                return res.render('explore', {
-                    title: 'Resource Explore',
-                    name: req.session.username,
-                    all_resources: output
-                });
-            }
-        });
+                                    //Get all tags in resource object
+                                    for (var i = 0; i < tags.length; i++) {
+                                        output_tag += '<button onclick="search_by_tag(\'' + tags[i] + '\')" class="btn btn-primary resource-tag" type="button">' + tags[i] + '</button>';
+                                    }
+
+                                    //Get all comments in resource object
+                                    for (var i = 0; i < comments.length; i++) {
+                                        output_comments += '<div class="comment">' +
+                                            '<span class="username"><strong>' + comments[i].username + ' ' + '</strong></span>' +
+                                            '<span class="comment-content">' + comments[i].content + '</span>' +
+                                            '<p class="comment-time">' + comments[i].timestamp + '</p>' +
+                                            '</div>';
+                                    }
+
+                                    modal = '<div id="addToCollection' + resource._id + '" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="addToCollection" aria-hidden="true">' +
+                                        '<div class="modal-dialog" role="document">' +
+                                        '<div class="modal-content">' +
+                                        '<div class="modal-header">' +
+                                        '<h5 class="modal-title">Add to Collection</h5>' +
+                                        '<button type="button" class="close" data-dismiss="modal" aria-label="Close">' +
+                                        '<span aria-hidden="true">&times;</span>' +
+                                        '</button>' +
+                                        '</div>' +
+                                        '<div class="modal-body">' +
+                                        '<div class="text-center">' +
+                                        '<div class="error_' + resource._id + '">' +
+                                        '</div>' +
+                                        '<img src="' + resource.image + '" class="img-fluid"></img>' +
+                                        '</div>' +
+                                        '<div>' +
+                                        '<h4>Choose a Collection</h4>' +
+                                        '<form class="form-group">' +
+                                        '<input class="form-control collection-inputbox" name="collection_label_' + resource._id + '" placeholder="Create a new collection"></input>' +
+                                        '<select class="custom-select collection-dropdown" name="collection_select_' + resource._id + '">' +
+                                        collection_select +
+                                        '</select>' +
+                                        '</form>' +
+                                        '</div>' +
+                                        '</div>' +
+                                        '<div class="modal-footer">' +
+                                        '<button type="button" class="btn btn-secondary switch_btn_' + resource._id + '" onclick="switch_modal_form(\'' + resource._id + '\')">Create New Collection</button>' +
+                                        '<button type="button" class="btn btn-primary save_btn_' + resource._id + '" onclick="addToExisting(\'' + resource._id + '\')">Save</button>' +
+                                        '</div>' +
+                                        '</div>' +
+                                        '</div>' +
+                                        '</div>';
+
+                                    //comment_box goes in the empty space
+                                    if (resource.recommended_by.includes(req.session.username)) {
+                                        var comment_box =
+                                            '<form class="form-group" onsubmit="add_comment(\'' + resource._id + '\');return false;">' +
+                                            '<input class="form-control" type="text" name="' + resource._id + '" placeholder="Write a comment..."></input>' +
+                                            '<button type="submit" style="display:none"></button>' +
+                                            '</form>' +
+                                            '<div class="resource-comments ' + resource._id + '">' + output_comments + '</div>';
+
+                                        output += 'div class="resource-card">' +
+                                            '<div class="cards" id="' + resource._id + '">' +
+                                            modal +
+                                            '<div class="user-bar">' +
+                                            '<span onclick="load_user_profile(\'' + resource.username + '\')" class="float-left"><strong>' + resource.username + '</strong></span></form>' +
+                                            '<span class="float-right"><strong>level 1</strong></span>' +
+                                            '</div>' +
+                                            '<a href="' + resource.url + '"><img class="img-thumbnail card-img w-100 d-block img-thumbnail-override" src="' + resource.image + '"></a>' +
+                                            '<div class="card-body"><h4 class="card-title">' + resource.title + '</h4>' +
+                                            '<div class="resource-tags-container">' + output_tag + '</div>' +
+                                            '<p class="card-text">' + resource.description + '</p>' +
+                                            '<div class="recommended-by-count"><p>' + resource.recommended_by_count + ' Recommends' + '</p></div>' +
+                                            '<div class="resource-actions-container">' +
+                                            '<form class="form-inline">' +
+                                            '<input type="hidden" name="_id" value="' + resource._id + '" id="resource_id"></input>' +
+                                            '<button type="button" class="btn text-uppercase recommend-button" id="not_recommend" onclick="un_recommend_resource(\'' + resource._id + '\');return false;" style="margin-right: 10px;"><i class="fas fa-thumbs-up"></i>&nbsp; Recommend</button>' +
+                                            '</form>' +
+                                            '<form class="form-inline">' +
+                                            '<button type="button" class="btn text-uppercase" data-comment=\"' + resource._id + '\" onclick="load_comments_request(\'' + resource._id + '\');return false;">&nbsp;<i class="far fa-comment"></i>&nbsp; comment</button>' +
+                                            '<button data-toggle="modal" data-target="#addToCollection' + resource._id + '" type="button" class="btn text-uppercase float-right"><i class="fas fa-plus"></i></button>' +
+                                            '</form>' +
+                                            '<div class="comment-box comment_box' + resource._id + '">' +
+
+                                            '</div>' +
+                                            '</div>' +
+                                            '</div>' +
+                                            '</div>' +
+                                            '</div';
+                                    } else {
+                                        var comment_box = '<div class="comment-box">' +
+                                            '<form class="form-group" onsubmit="add_comment(\'' + resource._id + '\');return false;">' +
+                                            '<input class="form-control" type="text" name="' + resource._id + '" placeholder="Write a comment..."></input>' +
+                                            '<button type="submit" style="display:none"></button>' +
+                                            '</form>' +
+                                            '</div>' +
+                                            '<div class="resource-comments ' + resource._id + '">' +
+                                            output_comments +
+                                            '</div>';
+
+                                        output += 'div class="resource-card">' +
+                                            '<div class="cards" id="' + resource._id + '">' +
+                                            modal +
+                                            '<div class="user-bar">' +
+                                            '<span onclick="load_user_profile(\'' + resource.username + '\')" class="float-left"><strong>' + resource.username + '</strong></span>' +
+                                            '<span class="float-right"><strong>level 1</strong></span>' +
+                                            '</div>' +
+                                            '<a href="' + resource.url + '"><img class="img-thumbnail card-img w-100 d-block img-thumbnail-override" src="' + resource.image + '"></a>' +
+                                            '<div class="card-body"><h4 class="card-title">' + resource.title + '</h4>' +
+                                            '<div class="resource-tags-container">' + output_tag + '</div>' +
+                                            '<p class="card-text">' + resource.description + '</p>' +
+                                            '<div class="recommended-by-count"><p>' + resource.recommended_by_count + ' Recommends' + '</p></div>' +
+                                            '<div class="resource-actions-container">' +
+                                            '<form class="form-inline">' +
+                                            '<input type="hidden" name="_id" value="' + resource._id + '" id="resource_id"></input>' +
+                                            '<button type="button" class="btn text-uppercase recommend-button" id="recommend" onclick="recommend_resource(\'' + resource._id + '\');return false;" style="margin-right: 10px;"><i class="far fa-thumbs-up"></i>&nbsp; Recommend</button>' +
+                                            '</form>' +
+                                            '<form class="form-inline">' +
+                                            '<button type="button" class="btn text-uppercase" data-comment=\"' + resource._id + '\" onclick="load_comments_request(\'' + resource._id + '\');return false;">&nbsp;<i class="far fa-comment"></i>&nbsp; comment</button>' +
+                                            '<button data-toggle="modal" data-target="#addToCollection' + resource._id + '" type="button" class="btn text-uppercase float-right"><i class="fas fa-plus"></i></button>' +
+                                            '</form>' +
+                                            '<div class="comment-box comment_box' + resource._id + '">' +
+
+                                            '</div>' +
+                                            '</div>' +
+                                            '</div>' +
+                                            '</div>' +
+                                            '</div';
+                                    }
+
+                                    output_tag = '';
+                                    output_comments = '';
+                                });
+                                return res.send(output);
+                            }
+                        });
+
+                    //console.log(collection_select);
+                }
+            });
+    }
 });
 
 //POST /recommend

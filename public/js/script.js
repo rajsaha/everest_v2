@@ -71,9 +71,15 @@ function removeComments(id) {
 }
 
 function getFeed() {
-    $.get('/feed-data-followers', (data) => {
-        console.log(data);
+    $.get('/feed-data', (data) => {
         appendResources(data);
+    });
+}
+
+function getExploreFeed() {
+    $.get('/explore-data', (data) => {
+        console.log(data);
+        appendResources_explore(data);
     });
 }
 
@@ -173,8 +179,17 @@ function load_user_profile(username) {
   $.post('/public_profile', user_object);
 }
 
+function search_by_tag(tag) {
+  var tag_object = {_tag: tag};
+  $.post('/search_by_tag', tag_object);
+}
+
 function goto_public_profile() {
   window.location.href = '/public_profile';
+}
+
+function goto_search_page() {
+  window.location.href = '/search_by_tag';
 }
 
 socket.on('recommend', reloadResource_recommend);
@@ -188,7 +203,8 @@ socket.on('updated_name', showConfirmation);
 socket.on('updated_email', showConfirmation);
 socket.on('goto_public_profile', goto_public_profile);
 socket.on('user_followed', reloadFollowButton_follow);
-socket.on('user_unfollowed', reloadFollowButton_unfollow)
+socket.on('user_unfollowed', reloadFollowButton_unfollow);
+socket.on('search_tag', goto_search_page);
 
 function test(){
   console.log('socket io test');
@@ -209,8 +225,13 @@ function appendResources(data) {
   $("#feed").append('<'+data);
 }
 
+function appendResources_explore(data) {
+  $("#explore_feed").append('<'+data);
+}
+
 $(document).ready(function() {
     $(() => {
         getFeed();
+        getExploreFeed();
     });
 });
