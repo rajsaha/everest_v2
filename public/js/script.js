@@ -12,6 +12,16 @@ function un_recommend_resource(resource) {
     console.log('un_recommended ' + resource);
 }
 
+function follow_user(user) {
+  var user_resource = {_user: user};
+  $.post('follow_user', user_resource);
+}
+
+function unfollow_user(user) {
+  var user_resource = {_user: user};
+  $.post('unfollow_user', user_resource);
+}
+
 function add_comment(id) {
 	var comment = $("input[name=\""+ id +"\"]").val();
 	var comment_json = {_comment: comment, _id: id};
@@ -61,7 +71,8 @@ function removeComments(id) {
 }
 
 function getFeed() {
-    $.get('/feed-data', (data) => {
+    $.get('/feed-data-followers', (data) => {
+        console.log(data);
         appendResources(data);
     });
 }
@@ -82,6 +93,18 @@ function reloadResource_not_recommend(resource) {
 	$("#" + resource._id + " " + ".recommend-button i").addClass("far");
 	$("#" + resource._id + " " + ".recommend-button").attr("onclick","recommend_resource('"+ resource._id +"');return false;");
 	console.log(resource);
+}
+
+function reloadFollowButton_follow(user) {
+  $("#btn_follow").removeClass("btn-light");
+  $("#btn_follow").addClass("btn-success");
+  $("#btn_follow").attr("onclick", "unfollow_user('"+ user +"')");
+}
+
+function reloadFollowButton_unfollow(user) {
+  $("#btn_follow").removeClass("btn-success");
+  $("#btn_follow").addClass("btn-light");
+  $("#btn_follow").attr("onclick", "follow_user('"+ user +"')");
 }
 
 function add_new_collection(resource_id) {
@@ -164,7 +187,8 @@ socket.on('updated_name_email', showConfirmation);
 socket.on('updated_name', showConfirmation);
 socket.on('updated_email', showConfirmation);
 socket.on('goto_public_profile', goto_public_profile);
-//socket.on('load_feed', getFeed);
+socket.on('user_followed', reloadFollowButton_follow);
+socket.on('user_unfollowed', reloadFollowButton_unfollow)
 
 function test(){
   console.log('socket io test');

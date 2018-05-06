@@ -34,7 +34,10 @@ var UserSchema = new mongoose.Schema({
 				resources: [String]
 			}
 		],
-	followers: [String],
+	followers: {
+		type: [String],
+		default: 'everest'
+	},
 	recommends: [String]
 });
 

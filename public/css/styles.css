@@ -163,3 +163,19 @@
 .collection-dropdown {
   display:inherit;
 }
+
+.public-username {
+  display: inline;
+}
+
+.follow-button {
+  display: inline;
+}
+
+.container>.public_profile {
+  display:flex;
+}
+
+.public_profile {
+  display:none;
+}
