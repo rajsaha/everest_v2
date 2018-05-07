@@ -203,6 +203,15 @@ function update_explore_page(output) {
   $("#explore_feed").append("<" + output);
 }
 
+function show_collection(index, title) {
+  var collection_object = {_index: index, _title: title};
+  $.post('/collection', collection_object);
+}
+
+function goto_collection() {
+  window.location.href = '/collection';
+}
+
 socket.on('recommend', reloadResource_recommend);
 socket.on('not_recommend', reloadResource_not_recommend);
 socket.on('added_comment', appendComment);
@@ -217,6 +226,7 @@ socket.on('user_followed', reloadFollowButton_follow);
 socket.on('user_unfollowed', reloadFollowButton_unfollow);
 socket.on('search_tag', goto_search_page);
 socket.on('update_explore', update_explore_page);
+socket.on('goto_collection', goto_collection);
 
 function test(){
   console.log('socket io test');
