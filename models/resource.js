@@ -42,7 +42,10 @@ var ResourceSchema = new mongoose.Schema({
 			}
 		}],
 	recommended_by: [String],
-	recommended_by_count: Number
+	recommended_by_count: {
+		type: Number,
+		default: 0
+	}
 });
 
 

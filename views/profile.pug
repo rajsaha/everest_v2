@@ -12,11 +12,21 @@ block content
 					.form-group
 						label(for='exampleInputPassword1') Email
 						input.form-control(type='email', placeholder=email, name='user_email')
-					button.btn.btn-primary(type='button' onclick='update_user_details()') Update
+					button.btn.btn-primary(type='button' onclick='update_user_details()', style='margin-bottom:25px;') Update
+				
+				h2 Followers
+				if followers == ''
+					p You're not following anyone yet. Go follow someone!
+				else
+					each follower in followers
+						p=follower
 			.col-md-6.profile-box
 				h2 Collections
 				.collections
-					#{collections}
+					if collections == ''
+						p You don't have any collections yet. Go make one!
+					else
+						#{collections}
 		.row
 			.col-md-12
 				.error-user-profile

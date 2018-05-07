@@ -78,9 +78,15 @@ function getFeed() {
 
 function getExploreFeed() {
     $.get('/explore-data', (data) => {
-        console.log(data);
+        //console.log(data);
         appendResources_explore(data);
     });
+}
+
+function search() {
+  var search_query = $("#input_search").val();
+  var search_query_object = {_query: search_query};
+  $.post('/explore-data', search_query_object);
 }
 
 function reloadResource_recommend(resource) {
@@ -192,6 +198,11 @@ function goto_search_page() {
   window.location.href = '/search_by_tag';
 }
 
+function update_explore_page(output) {
+  $("#explore_feed").html("");
+  $("#explore_feed").append("<" + output);
+}
+
 socket.on('recommend', reloadResource_recommend);
 socket.on('not_recommend', reloadResource_not_recommend);
 socket.on('added_comment', appendComment);
@@ -205,6 +216,7 @@ socket.on('goto_public_profile', goto_public_profile);
 socket.on('user_followed', reloadFollowButton_follow);
 socket.on('user_unfollowed', reloadFollowButton_unfollow);
 socket.on('search_tag', goto_search_page);
+socket.on('update_explore', update_explore_page);
 
 function test(){
   console.log('socket io test');
