@@ -12,6 +12,7 @@
   border-radius:4px;
   color:#505e6c;
   box-shadow:1px 1px 5px rgba(0,0,0,0.1);
+  margin-bottom: 25px;
 }
 
 .login-clean .illustration {
@@ -65,4 +66,3 @@
   opacity:1;
   text-decoration:none;
 }
-

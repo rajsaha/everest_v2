@@ -15,7 +15,7 @@ router.get('/profile', mid.requiresLogin, async (req, res, next) => {
          let resource = await Resource.findOne({_id:user.all_collections[i].resources[0]});
          body += open_tag;
          body += '<img class="card-img-top card-collection-img" src="'+
-         resource.image +'" onclick="show_collection(\''+ i +'\', \''+ user.all_collections[i].title +'\')"></img><div class="card-body card-collection-p"><p class="card-text text-center">' +
+         resource.image +'" onclick="show_collection(\''+ i +'\', \''+ user.all_collections[i].title +'\',\'' + user.name + '\')"></img><div class="card-body card-collection-p"><p class="card-text text-center">' +
          user.all_collections[i].title +
          '</p></div>';
          body += close_tag;
@@ -41,7 +41,7 @@ router.get('/public_profile', mid.requiresLogin, async (req, res, next) => {
          let resource = await Resource.findOne({_id:user.all_collections[i].resources[0]});
          collection_output += open_tag;
          collection_output += '<img class="card-img-top card-collection-img" src="'+
-         resource.image +'"></img><div class="card-body card-collection-p"><p class="card-text text-center">' +
+         resource.image +'" onclick="show_collection(\''+ i +'\', \''+ user.all_collections[i].title +'\',\'' + user.name + '\')"></img><div class="card-body card-collection-p"><p class="card-text text-center">' +
          user.all_collections[i].title +
          '</p></div>';
          collection_output += close_tag;
@@ -93,6 +93,7 @@ router.get('/public_profile', mid.requiresLogin, async (req, res, next) => {
 
 var current_collection = '';
 var current_collection_title = '';
+var current_collection_user = '';
 router.post('/collection', mid.requiresLogin, async (req, res, next) => {
   var output = '';
   var output_tag = '';
@@ -100,7 +101,7 @@ router.post('/collection', mid.requiresLogin, async (req, res, next) => {
   var modal = '';
   var collection_names = [];
   var collection_select = '';
-  if(req.body._index && req.body._title) {
+  if(req.body._index && req.body._title && req.body._user) {
     console.log(req.body._index + ' ' + req.body._title);
     let user = await  User.findOne({ _id: req.session.userId });
     let resource = await Resource.find({_id:{$in:user.all_collections[req.body._index].resources}});
@@ -240,6 +241,7 @@ router.post('/collection', mid.requiresLogin, async (req, res, next) => {
     });
 
     current_collection_title = req.body._title;
+    current_collection_user = req.body._user;
     current_collection = output;
     req.app.io.emit('goto_collection', 'success');
   }
@@ -248,7 +250,13 @@ router.post('/collection', mid.requiresLogin, async (req, res, next) => {
 //GET /collection
 router.get('/collection', mid.requiresLogin, function(req, res, next) {
   if(current_collection && current_collection_title) {
-    return res.render('collection',{title:'Collection', name:req.session.username, collection: current_collection, collection_title: current_collection_title});
+    return res.render('collection',{
+      title:'Collection',
+      name:req.session.username,
+      collection: current_collection,
+      collection_title: current_collection_title,
+      collection_user: current_collection_user
+    });
   } else {
     return res.redirect('/profile');
   }
@@ -290,23 +298,28 @@ router.get('/logout', function(req, res, next) {
 });
 
 //GET /login
+var _error = null;
 router.get('/login', mid.loggedOut, function(req, res, next) {
-    return res.render('login', { title: 'Log In' });
+    return res.render('login', { title: 'Log In', error:_error });
 });
 
 //GET /register
 router.get('/register', mid.loggedOut, function(req, res, next) {
-    return res.render('register', { title: 'Register' });
+    _error = null;
+    return res.render('register', { title: 'Register'});
 });
 
 //POST /login
 router.post('/login', function(req, res, next) {
+    _error = null;
     if (req.body.username && req.body.password) {
         User.authenticate(req.body.username, req.body.password, function(error, user) {
             if (error || !user) {
-                var err = new Error('Wrong username or password.');
-                err.status = 401;
-                return next(err);
+                // var err = new Error('Wrong username or password.');
+                // err.status = 401;
+                // return next(err);
+                _error = 'div class="alert alert-danger"><span class="login-error-message"><i class="fas fa-exclamation-triangle"></i>&nbsp; Wrong username / password </span></div';
+                return res.redirect('/login');
             } else {
                 req.session.userId = user._id;
                 req.session.username = user.username;
@@ -368,40 +381,69 @@ router.post('/register', function(req, res, next) {
 
 //POST /resource_upload
 router.post('/resource_upload', function(req, res, next) {
-    if (req.body.url &&
-        req.body.title &&
-        req.body.tags &&
-        req.body.desc) {
+    if (req.body._url &&
+        req.body._title &&
+        req.body._tags &&
+        req.body._description) {
 
         //Get site image url
-        urlMetadata(req.body.url).then(
-            function(metadata) {
-                var image_url = metadata.image;
+        if(req.body._custom_image) {
+          console.log('custom image');
+          //create object with form input
+          var resourceData = {
+              username: req.session.username,
+              url: req.body._url,
+              title: req.body._title,
+              tags: req.body._tags.toLowerCase(),
+              description: req.body._description,
+              image: req.body._custom_image
+          };
 
-                //create object with form input
-                var resourceData = {
-                    username: req.session.username,
-                    url: req.body.url,
-                    title: req.body.title,
-                    tags: req.body.tags.toLowerCase(),
-                    description: req.body.desc,
-                    image: image_url
-                };
+          //insert document into model
+          Resource.create(resourceData, function(error, user) {
+              if (error) {
+                  // return next(error);
+                  req.app.io.emit('append_new_resource_error', 'error');
+              } else {
+                  // return res.redirect('/feed');
+                  req.app.io.emit('append_new_resource_success', 'success');
+                  //return res.send(user);
+              }
+          });
+        } else {
+          urlMetadata(req.body._url).then(
+              function(metadata) {
+                  var image_url = metadata.image;
+                  console.log('image from url');
+                  //create object with form input
+                  var resourceData = {
+                      username: req.session.username,
+                      url: req.body._url,
+                      title: req.body._title,
+                      tags: req.body._tags.toLowerCase(),
+                      description: req.body._description,
+                      image: image_url
+                  };
 
-                //insert document into model
-                Resource.create(resourceData, function(error, user) {
-                    if (error) {
-                        return next(error);
-                    } else {
-                        return res.redirect('/feed');
-                    }
-                });
+                  //insert document into model
+                  Resource.create(resourceData, function(error, user) {
+                      if (error) {
+                          //return next(error);
+                          req.app.io.emit('append_new_resource_error', 'error');
+                      } else {
+                          // return res.redirect('/feed');
+                          req.app.io.emit('append_new_resource_success', 'success');
+                          //return res.send(user);
+                      }
+                  });
 
-            },
-            function(error) {
-                return next(error);
-            }
-        );
+              },
+              function(error) {
+                  //return next(error);
+                  req.app.io.emit('append_new_resource_error', 'error');
+              }
+          );
+        }
 
     } else {
         var err = new Error('All fields required.');
@@ -412,6 +454,7 @@ router.post('/resource_upload', function(req, res, next) {
 
 // GET /
 router.get('/', function(req, res, next) {
+    _error = null;
     return res.render('index', { title: 'Home', name: req.session.username });
 });
 
@@ -1561,6 +1604,7 @@ router.post('/add_new_collection', function(req, res, next) {
                     return next(error);
                 } else {
                     console.log('Step 1 Done');
+                    req.app.io.emit('added_new_collection', 'success');
                     return res.redirect('/feed');
                 }
             });

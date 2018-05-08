@@ -84,7 +84,7 @@ function getExploreFeed() {
 }
 
 function search() {
-  var search_query = $("#input_search").val();
+  var search_query = $("#input_search").val().toLowerCase();
   var search_query_object = {_query: search_query};
   $.post('/explore-data', search_query_object);
 }
@@ -203,13 +203,47 @@ function update_explore_page(output) {
   $("#explore_feed").append("<" + output);
 }
 
-function show_collection(index, title) {
-  var collection_object = {_index: index, _title: title};
+function show_collection(index, title, user) {
+  var collection_object = {_index: index, _title: title, _user:user};
   $.post('/collection', collection_object);
 }
 
 function goto_collection() {
   window.location.href = '/collection';
+}
+
+function share_resource() {
+  var url = $("#url").val();
+  var title = $("#title").val();
+  var custom_image = $("#image").val();
+  var tags = $("#tags").val();
+  var description = $("#desc").val();
+
+  var resource_object = {
+    _url: url,
+    _title: title,
+    _custom_image: custom_image,
+    _tags: tags,
+    _description: description
+  };
+  $.post('/resource_upload', resource_object);
+  $('#resourceShare').modal('toggle');
+}
+
+function append_new_resource() {
+  console.log('triggered');
+  window.location.href = '/feed';
+}
+
+function append_new_resource_error(resource) {
+  $(".feed-error").css("display","inherit");
+  setTimeout(function(){
+    $(".feed-error").css('display','none');
+  },3000);
+}
+
+function goto_feed() {
+  window.location.href = '/feed';
 }
 
 socket.on('recommend', reloadResource_recommend);
@@ -227,10 +261,9 @@ socket.on('user_unfollowed', reloadFollowButton_unfollow);
 socket.on('search_tag', goto_search_page);
 socket.on('update_explore', update_explore_page);
 socket.on('goto_collection', goto_collection);
-
-function test(){
-  console.log('socket io test');
-}
+socket.on('added_new_collection', goto_feed);
+socket.on('append_new_resource_success', append_new_resource);
+socket.on('append_new_resource_error', append_new_resource_error);
 
 function appendComment(resource) {
 	var time = moment(resource.timestamp).format("MMM DD, YY | h:m:s");

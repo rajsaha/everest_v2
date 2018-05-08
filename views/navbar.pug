@@ -36,13 +36,16 @@ div
                         button.close(type='button', data-dismiss='modal', aria-label='Close')
                           span(aria-hidden='true') ×
                       #modal.modal-body
-                        form(method='post' action='/resource_upload')
+                        form
                           .form-group
                             label(for='url') URL
                             input#url.form-control(type='url', aria-describedby='url', placeholder='Paste in your URL here' name='url')
                           .form-group
                             label(for='title') Title
                             input#title.form-control(type='text', aria-describedby='title', placeholder='Paste in your URL here' name='title')
+                          .form-group
+                            label(for='image') Custom Image
+                            input#image.form-control(type='text', aria-describedby='image', placeholder='Use a custom image for your resource' name='image')
                           .form-group
                             label(for='tags') Tags
                             input#tags.form-control(type='text', placeholder='Separate tags with commas' name='tags')
@@ -51,4 +54,4 @@ div
                             input#desc.form-control(type='text', placeholder='Why is it a good resource?' name='desc')
                           .modal-footer
                             button.btn.btn-secondary(type='button', data-dismiss='modal') Close
-                            button#share.btn.btn-primary Share
+                            button#share.btn.btn-primary(onclick='share_resource();return false;') Share
