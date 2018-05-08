@@ -6,6 +6,10 @@
   display:none;
 }
 
+.resource-card {
+  font-family: 'Open Sans', sans-serif;
+}
+
 .resource-card>.cards {
   border:1px solid rgba(0,0,0,0.1);
   border-radius: 3px;

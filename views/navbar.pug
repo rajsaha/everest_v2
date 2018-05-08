@@ -1,17 +1,20 @@
 div
   nav.navbar.navbar-light.navbar-expand-md.navigation-clean-button(style='padding-bottom:16px;')
     .container
-      a.navbar-brand.text-uppercase(href='/', style='font-weight:normal;')
-        img#sitelogo(src='img/everest.png', width='40px')
-        |   &nbsp;&nbsp;E v e r e s t
+      if currentUser
+        a.navbar-brand.text-uppercase(href='/feed', style='font-weight:normal;')
+          img#sitelogo(src='img/everest.png', width='40px')
+          |   &nbsp;&nbsp;E v e r e s t
+      else
+        a.navbar-brand.text-uppercase(href='/', style='font-weight:normal;')
+          img#sitelogo(src='img/everest.png', width='40px')
+          |   &nbsp;&nbsp;E v e r e s t
       button.navbar-toggler(data-toggle='collapse', data-target='#navcol-1')
         span.sr-only Toggle navigation
         span.navbar-toggler-icon
       #navcol-1.collapse.navbar-collapse
         ul.nav.navbar-nav.mr-auto
-          if currentUser
-            li.nav-item
-                a.nav-link(href='feed') Resource Feed             
+          if currentUser            
             li.nav-item.share-resources-button(role='button', data-toggle='modal', data-target='#resourceShare')
                 a.nav-link.share-resources-button(href='#resourceShare') Share Resource
             li.nav-item
