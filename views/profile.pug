@@ -19,12 +19,12 @@ block content
 					p You're not following anyone yet. Go follow someone!
 				else
 					each follower in followers
-						.followers
-							span(onclick='load_user_profile(\''+ follower +'\')')=follower
-							span &nbsp;
-							button.btn.btn-success.float-right(id="btn_follow_" + follower onclick="unfollow_user('"+ follower +"')")
-								i.fas.fa-user-plus
-						//p=follower
+						if follower != username
+							.followers
+								span(onclick='load_user_profile(\''+ follower +'\')')=follower
+								span &nbsp;
+								button.btn.btn-success.float-right(id="btn_follow_" + follower onclick="unfollow_user('"+ follower +"')")
+									i.fas.fa-user-plus
 			.col-md-6.profile-box
 				h2 Collections
 				.collections

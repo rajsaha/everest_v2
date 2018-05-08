@@ -20,7 +20,7 @@ router.get('/profile', mid.requiresLogin, async (req, res, next) => {
          '</p></div>';
          body += close_tag;
     }
-    res.render('profile', {title:'Profile', name: user.name, email:user.email, collections:body, followers:user.followers})
+    res.render('profile', {title:'Profile', name: user.name, username:user.username, email:user.email, collections:body, followers:user.followers})
 });
 
 var public_profile_username = '';
@@ -50,10 +50,12 @@ router.get('/public_profile', mid.requiresLogin, async (req, res, next) => {
 
     //GET public profile user followers
     for(let j=0; j<user.followers.length; j++) {
-      if(own.followers.includes(user.followers[j])) {
-        _followers += '<div class="followers"><span onclick=load_user_profile(\''+ user.followers[j] +'\')>'+ user.followers[j] +'</span><button id="btn_follow_' + user.followers[j] + '" onclick="unfollow_user(\'' + user.followers[j] + '\')" class="btn btn-success float-right"><i class="fas fa-user-plus"></i></button></div>';
-      } else {
-        _followers += '<div class="followers"><span onclick=load_user_profile(\''+ user.followers[j] +'\')>'+ user.followers[j] +'</span><button id="btn_follow_' + user.followers[j] + '" onclick="follow_user(\'' + user.followers[j] + '\')" class="btn btn-light float-right"><i class="fas fa-user-plus"></i></button></div>';
+      if(user.followers[j] != user.username) {
+        if(own.followers.includes(user.followers[j])) {
+          _followers += '<div class="followers"><span onclick=load_user_profile(\''+ user.followers[j] +'\')>'+ user.followers[j] +'</span><button id="btn_follow_' + user.followers[j] + '" onclick="unfollow_user(\'' + user.followers[j] + '\')" class="btn btn-success float-right"><i class="fas fa-user-plus"></i></button></div>';
+        } else {
+          _followers += '<div class="followers"><span onclick=load_user_profile(\''+ user.followers[j] +'\')>'+ user.followers[j] +'</span><button id="btn_follow_' + user.followers[j] + '" onclick="follow_user(\'' + user.followers[j] + '\')" class="btn btn-light float-right"><i class="fas fa-user-plus"></i></button></div>';
+        }
       }
     }
 
