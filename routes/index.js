@@ -33,6 +33,7 @@ router.get('/public_profile', mid.requiresLogin, async (req, res, next) => {
     let open_tag = '<div class="collections"><div class="card card-container">';
     let close_tag = '</div></div>';
     let _output = '';
+    let _followers = '';
     let user = await  User.findOne({ username: public_profile_username });
     let own = await User.findOne({_id: req.session.userId});
 
@@ -47,6 +48,23 @@ router.get('/public_profile', mid.requiresLogin, async (req, res, next) => {
          collection_output += close_tag;
     }
 
+    //GET public profile user followers
+    for(let j=0; j<user.followers.length; j++) {
+      if(own.followers.includes(user.followers[j])) {
+        _followers += '<div class="followers"><span onclick=load_user_profile(\''+ user.followers[j] +'\')>'+ user.followers[j] +'</span><button id="btn_follow_' + user.followers[j] + '" onclick="unfollow_user(\'' + user.followers[j] + '\')" class="btn btn-success float-right"><i class="fas fa-user-plus"></i></button></div>';
+      } else {
+        _followers += '<div class="followers"><span onclick=load_user_profile(\''+ user.followers[j] +'\')>'+ user.followers[j] +'</span><button id="btn_follow_' + user.followers[j] + '" onclick="follow_user(\'' + user.followers[j] + '\')" class="btn btn-light float-right"><i class="fas fa-user-plus"></i></button></div>';
+      }
+    }
+
+    if(_followers == '' || _followers == null) {
+      _followers = '<p>'+ user.name +' isn\'t following anyone.</p>';
+    }
+
+    if(collection_output == '' || collection_output == null) {
+      collection_output = '<p>'+ user.name +' doesn\'t have any collections yet.</p>';
+    }
+
     //Check if logged in user is following public_profile_user
     var own_has_followers = own.followers.includes(public_profile_username);
 
@@ -55,9 +73,11 @@ router.get('/public_profile', mid.requiresLogin, async (req, res, next) => {
       '<div class="row public_profile">'+
       '<div class="col-md-6 profile-box">'+
       '<h3 class="public-username">'+ user.username +'&nbsp;</h3>'+
-      '<button id="btn_follow" class="btn btn-success follow-button" onclick="unfollow_user(\'' + public_profile_username + '\')"><i class="fas fa-user-plus"></i></button>'+
+      '<button id="btn_follow_' + user.username + '" class="btn btn-success follow-button" onclick="unfollow_user(\'' + public_profile_username + '\')"><i class="fas fa-user-plus"></i></button>'+
       '<p>'+ user.name +'</p>'+
       '<p>'+ user.email +'</p>'+
+      '<h2>Followers</h2>'+
+      _followers+
       '</div>'+
       '<div class="col-md-6 profile-box">'+
       '<h2>Collections</h2>'+
@@ -72,9 +92,10 @@ router.get('/public_profile', mid.requiresLogin, async (req, res, next) => {
       '<div class="row public_profile">'+
       '<div class="col-md-6 profile-box">'+
       '<h3 class="public-username">'+ user.username +'&nbsp;</h3>'+
-      '<button id="btn_follow" class="btn btn-light follow-button" onclick="follow_user(\'' + public_profile_username + '\')"><i class="fas fa-user-plus"></i></button>'+
+      '<button id="btn_follow_' + user.username + '" class="btn btn-light follow-button" onclick="follow_user(\'' + public_profile_username + '\')"><i class="fas fa-user-plus"></i></button>'+
       '<p>'+ user.name +'</p>'+
       '<p>'+ user.email +'</p>'+
+      _followers +
       '</div>'+
       '<div class="col-md-6 profile-box">'+
       '<h2>Collections</h2>'+

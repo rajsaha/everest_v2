@@ -108,15 +108,15 @@ function reloadResource_not_recommend(resource) {
 }
 
 function reloadFollowButton_follow(user) {
-  $("#btn_follow").removeClass("btn-light");
-  $("#btn_follow").addClass("btn-success");
-  $("#btn_follow").attr("onclick", "unfollow_user('"+ user +"')");
+  $("#btn_follow_" + user).removeClass("btn-light");
+  $("#btn_follow_" + user).addClass("btn-success");
+  $("#btn_follow_" + user).attr("onclick", "unfollow_user('"+ user +"')");
 }
 
 function reloadFollowButton_unfollow(user) {
-  $("#btn_follow").removeClass("btn-success");
-  $("#btn_follow").addClass("btn-light");
-  $("#btn_follow").attr("onclick", "follow_user('"+ user +"')");
+  $("#btn_follow_" + user).removeClass("btn-success");
+  $("#btn_follow_" + user).addClass("btn-light");
+  $("#btn_follow_" + user).attr("onclick", "follow_user('"+ user +"')");
 }
 
 function add_new_collection(resource_id) {

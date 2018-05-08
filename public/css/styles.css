@@ -243,3 +243,13 @@
 .login-error-message {
   display: none;
 }
+
+.followers {
+  background-color: #EEEEEE;
+  border: 1px solid rgba(0,0,0,0.2);
+  border-radius: 3px;
+  padding:10px;
+  margin-bottom: 4px;
+  height:60px;
+  line-height: 35px;
+}
