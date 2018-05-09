@@ -210,6 +210,17 @@
 }
 
 .public-username {
+  font-weight: 700;
+  display: inline;
+  margin-left:-10px;
+}
+
+.public-email {
+  font-weight: 300;
+}
+
+.public-collections {
+  margin-bottom: 0px;
   display: inline;
 }
 
@@ -335,5 +346,7 @@
 }
 
 @media (max-width: 768px) {
-
+  .intro {
+    width: 300px;
+  }
 }

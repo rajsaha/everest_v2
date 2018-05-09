@@ -8,17 +8,18 @@ block content
 			h2.text-center 
 				| Free academic resources. 
 				br
-				| Curated just for you.
+				| Curated for you. By you.
 	.container
-		.col-md-12
-			.intro
-				p.text-center
-					| Whether you're an artist or a web developer, the Internet has amazingly useful academic resources you can access 
-					strong for free.
-					|  Everest gets you the best of them and lets you share your own.
-				if !currentUser
-					.buttons.text-center
-						a.btn.btn-primary(role='button', href='register') Sign Up
+		.row
+			.col-md-12
+				.intro
 					p.text-center
-						| Have an account already? 
-						a(href='login') Sign in.
+						| Whether you're an artist or a web developer, the Internet has amazingly useful academic resources you can access 
+						strong for free.
+						|  Everest gets you the best of them and lets you share your own.
+					if !currentUser
+						.buttons.text-center
+							a.btn.btn-primary(role='button', href='register') Sign Up
+						p.text-center
+							| Have an account already? 
+							a(href='login') Sign in.

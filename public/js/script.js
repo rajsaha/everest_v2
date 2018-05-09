@@ -219,8 +219,17 @@ function show_collection(index, title, user) {
   $.post('/collection', collection_object);
 }
 
+function show_public_collection(index, title, user) {
+  var collection_object = {_index: index, _title: title, _user:user};
+  $.post('/public_collection', collection_object);
+}
+
 function goto_collection() {
   window.location.href = '/collection';
+}
+
+function goto_public_collection() {
+  window.location.href = '/public_collection';
 }
 
 function share_resource() {
@@ -272,6 +281,7 @@ socket.on('user_unfollowed', reloadFollowButton_unfollow);
 socket.on('search_tag', goto_search_page);
 socket.on('update_explore', update_explore_page);
 socket.on('goto_collection', goto_collection);
+socket.on('goto_public_collection', goto_public_collection);
 socket.on('added_new_collection', goto_feed);
 socket.on('append_new_resource_success', append_new_resource);
 socket.on('append_new_resource_error', append_new_resource_error);

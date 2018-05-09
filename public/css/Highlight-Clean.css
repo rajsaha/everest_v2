@@ -72,3 +72,12 @@
   color:#fff;
 }
 
+@media (max-width:768px) {
+  .highlight-clean h1 {
+    font-size: 50px;
+  }
+
+  .highlight-clean h2 {
+    font-size: 30px;
+  }
+}
