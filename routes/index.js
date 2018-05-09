@@ -73,37 +73,42 @@ router.get('/public_profile', mid.requiresLogin, async (req, res, next) => {
     if(own_has_followers != '') {
       _output += 'div class="container">'+
       '<div class="row public_profile">'+
-      '<div class="col-md-6 profile-box">'+
-      '<h3 class="public-username">'+ user.username +'&nbsp;</h3>'+
-      '<button id="btn_follow_' + user.username + '" class="btn btn-success follow-button" onclick="unfollow_user(\'' + public_profile_username + '\')"><i class="fas fa-user-plus"></i></button>'+
+      '<div class="col-md-12 profile-box">'+
+      '<div class="followers">' +
+      '<h2 class="public-username">'+ user.username +'&nbsp;</h2>'+
+      '<button id="btn_follow_' + user.username + '" class="btn btn-light" onclick="unfollow_user(\'' + public_profile_username + '\')"><i class="fas fa-user-times"></i>&nbsp;<span>Unfollow</span></button>'+
+      '</div>'+
       '<p>'+ user.name +'</p>'+
       '<p>'+ user.email +'</p>'+
-      '<h2>Followers</h2>'+
-      _followers+
       '</div>'+
-      '<div class="col-md-6 profile-box">'+
+      '<div class="col-md-12 profile-box">'+
       '<h2>Collections</h2>'+
       '<div class="collections">'+
       collection_output +
       '</div>'+
+      '<h2>Followers</h2>'+
+      _followers+
       '</div>'+
       '</div>'+
       '</div';
     } else {
       _output += 'div class="container">'+
       '<div class="row public_profile">'+
-      '<div class="col-md-6 profile-box">'+
-      '<h3 class="public-username">'+ user.username +'&nbsp;</h3>'+
-      '<button id="btn_follow_' + user.username + '" class="btn btn-light follow-button" onclick="follow_user(\'' + public_profile_username + '\')"><i class="fas fa-user-plus"></i></button>'+
+      '<div class="col-md-12 profile-box">'+
+      '<div class="followers">' +
+      '<h2 class="public-username">'+ user.username +'&nbsp;</h2>'+
+      '<button id="btn_follow_' + user.username + '" class="btn btn-light" onclick="follow_user(\'' + public_profile_username + '\')"><i class="fas fa-user-plus"></i>&nbsp;<span>Follow</span></button>'+
+      '</div>' +
       '<p>'+ user.name +'</p>'+
       '<p>'+ user.email +'</p>'+
-      _followers +
       '</div>'+
-      '<div class="col-md-6 profile-box">'+
+      '<div class="col-md-12 profile-box">'+
       '<h2>Collections</h2>'+
       '<div class="collections">'+
       collection_output +
       '</div>'+
+      '<h2>Followers</h2>'+
+      _followers +
       '</div>'+
       '</div>'+
       '</div';
@@ -566,7 +571,7 @@ router.get('/feed-data', function(req, res, next) {
 
                                     //Get all tags in resource object
                                     for (var i = 0; i < tags.length; i++) {
-                                        output_tag += '<button onclick="search_by_tag(\'' + tags[i] + '\')" class="btn btn-primary resource-tag" type="button">' + tags[i] + '</button>';
+                                        output_tag += '<button onclick="search_by_tag(\'' + tags[i] + '\')" class="btn btn-custom resource-tag" type="button">' + tags[i] + '</button>';
                                     }
 
                                     //Get all comments in resource object
@@ -604,8 +609,8 @@ router.get('/feed-data', function(req, res, next) {
                                         '</div>' +
                                         '</div>' +
                                         '<div class="modal-footer">' +
-                                        '<button type="button" class="btn btn-secondary switch_btn_' + resource._id + '" onclick="switch_modal_form(\'' + resource._id + '\')">Create New Collection</button>' +
-                                        '<button type="button" class="btn btn-primary save_btn_' + resource._id + '" onclick="addToExisting(\'' + resource._id + '\')">Save</button>' +
+                                        '<button type="button" class="btn btn-light switch_btn_' + resource._id + '" onclick="switch_modal_form(\'' + resource._id + '\')">Create New Collection</button>' +
+                                        '<button type="button" class="btn btn-success save_btn_' + resource._id + '" onclick="addToExisting(\'' + resource._id + '\')">Save</button>' +
                                         '</div>' +
                                         '</div>' +
                                         '</div>' +

@@ -108,14 +108,25 @@ function reloadResource_not_recommend(resource) {
 }
 
 function reloadFollowButton_follow(user) {
-  $("#btn_follow_" + user).removeClass("btn-light");
-  $("#btn_follow_" + user).addClass("btn-success");
+  $("#btn_follow_" + user).removeClass("btn-success");
+  $("#btn_follow_" + user).addClass("btn-light");
   $("#btn_follow_" + user).attr("onclick", "unfollow_user('"+ user +"')");
+
+  $("#btn_follow_" + user + " i").css("color","rgba(0,0,0,0.54)");
+  $("#btn_follow_" + user + " span").css("color","rgba(0,0,0,0.54)");
+  $("#btn_follow_" + user + " i").removeClass("fa-user-plus");
+  $("#btn_follow_" + user + " i").addClass("fa-user-times");
+  $("#btn_follow_" + user + " span").text("Unfollow");
 }
 
 function reloadFollowButton_unfollow(user) {
-  $("#btn_follow_" + user).removeClass("btn-success");
-  $("#btn_follow_" + user).addClass("btn-light");
+  $("#btn_follow_" + user).removeClass("btn-light");
+  $("#btn_follow_" + user).addClass("btn-success");
+  $("#btn_follow_" + user + " i").css("color","white");
+  $("#btn_follow_" + user + " span").css("color","white");
+  $("#btn_follow_" + user + " i").removeClass("fa-user-times");
+  $("#btn_follow_" + user + " i").addClass("fa-user-plus");
+  $("#btn_follow_" + user + " span").text("Follow");
   $("#btn_follow_" + user).attr("onclick", "follow_user('"+ user +"')");
 }
 
