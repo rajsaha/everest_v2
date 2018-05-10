@@ -73,7 +73,7 @@
 
 @media (min-width: 768px) {
   .resource-card {
-    padding:10% 25% 10% 25%;
+    padding:50px 25% 10% 25%;
   }
 }
 
@@ -88,4 +88,3 @@
   border-top-left-radius:5px;
   border-top-right-radius:5px;
 }
-

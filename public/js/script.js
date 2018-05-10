@@ -309,5 +309,34 @@ $(document).ready(function() {
     $(() => {
         getFeed();
         getExploreFeed();
+        append_login_logo();
     });
 });
+
+function append_login_logo() {
+  var everest_logo = '<svg id="travscapade-logo" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400.2 400">'+
+                '<defs>'+
+                  '<clipPath id="b">'+
+                    '<rect width="400" height="400" x="244.4" y="429.4" transform="rotate(-44.872)" ry="0"/>'+
+                  '</clipPath>'+
+                  '<clipPath id="c">'+
+                    '<rect width="400" height="400" x="244.4" y="429.4" transform="rotate(-44.872)" ry="0"/>'+
+                  '</clipPath>'+
+                  '<linearGradient id="a" x1="227" x2="222.3" y1="5.5" y2="547.9" spreadMethod="reflect" gradientUnits="userSpaceOnUse" gradientTransform="translate(-23.514 -23.619)">'+
+                    '<stop offset="0" stop-color="#ff6a00"/>'+
+                    '<stop offset="1" stop-color="#ee0979"/>'+
+                  '</linearGradient>'+
+                '</defs>'+
+                '<rect id="rect-bg" class="border-no-fill transition-color" width="400" height="400" x=".2" fill="url(#a)" ry="0"/>'+
+                '<g fill="#040404" transform="translate(-10.113 -6.2768)">'+
+                  '<rect id="hill1" class="border-no-fill transition-color" width="282.9" height="282.9" x="617.7" y="273.8" fill-opacity=".2" transform="matrix(.70868 .70553 -.70553 .70868 -234.28 -423.23)" clip-path="url(#b)" ry="0"/>'+
+                  '<rect id="hill2" class="border-no-fill transition-color" width="282.9" height="282.9" x="617.7" y="273.8" fill-opacity=".6" transform="matrix(-.70868 .70553 .70553 .70868 654.66 -423.21)" clip-path="url(#c)" ry="0"/>'+
+                '</g>'+
+                '<g fill="#ebcb29" fill-opacity=".8" transform="translate(-10.113 -6.2768)">'+
+                  '<circle id="sun1" class="border-no-fill transition-color" cx="210.1" cy="139.3" r="65.2"/>'+
+                  '<circle id="sun2" class="border-no-fill transition-color" cx="210.8" cy="139.2" r="45.6"/>'+
+                '</g>'+
+                '<rect id="mountain" class="border-no-fill transition-color" width="220.2" height="220.2" x="-82.6" y="215.4" fill="#e0372c" fill-opacity=".6" transform="translate(-10.113 -6.2768) matrix(-.70868 .70553 .70553 .70868 0 0)" ry="0"/>'+
+              '</svg>';
+  $(".illustration").append(everest_logo);
+}

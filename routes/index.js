@@ -54,7 +54,7 @@ router.get('/public_profile', mid.requiresLogin, async (req, res, next) => {
         if(own.followers.includes(user.followers[j])) {
           _followers += '<div class="followers"><span onclick=load_user_profile(\''+ user.followers[j] +'\')>'+ user.followers[j] +'</span><button id="btn_follow_' + user.followers[j] + '" onclick="unfollow_user(\'' + user.followers[j] + '\')" class="btn btn-light float-right"><i class="fas fa-user-times"></i>&nbsp; <span>Unfollow</span></button></div>';
         } else {
-          _followers += '<div class="followers"><span onclick=load_user_profile(\''+ user.followers[j] +'\')>'+ user.followers[j] +'</span><button id="btn_follow_' + user.followers[j] + '" onclick="follow_user(\'' + user.followers[j] + '\')" class="btn btn-success float-right"><i class="fas fa-user-plus"></i>&nbsp; <span>Follow</span></button></div>';
+          _followers += '<div class="followers"><span onclick=load_user_profile(\''+ user.followers[j] +'\')>'+ user.followers[j] +'</span><button id="btn_follow_' + user.followers[j] + '" onclick="follow_user(\'' + user.followers[j] + '\')" class="btn btn-success float-right"><i class="fas fa-user-plus" style="color:#FFFFFF"></i>&nbsp; <span style="color:#FFFFFF">Follow</span></button></div>';
         }
       }
     }

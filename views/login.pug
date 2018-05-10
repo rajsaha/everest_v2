@@ -5,12 +5,11 @@ block content
 				form(method='post' action='/login')
 					h2.sr-only Login Form
 					.illustration
-						i.fas.fa-lock
 					.form-group
 						input.form-control(type='username', name='username', placeholder='Username')
 					.form-group
 						input.form-control(type='password', name='password', placeholder='Password')
 					.form-group
-						button.btn.btn-primary.btn-block(type='submit', style='background-color:rgb(253,94,15);') Log In
+						button.btn.btn-block(type='submit' style='background-color:#ef1b61;color:white;') Log In
 				.login-error.text-center
 					#{error}

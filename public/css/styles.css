@@ -17,6 +17,18 @@
   display: inherit;
 }
 
+.resource-card>.cards:nth-of-type(1) {
+  animation: move-up 0.8s ease-in-out;
+}
+
+.resource-card>.cards:nth-of-type(2) {
+  animation: move-up 0.8s ease-in-out;
+}
+
+.resource-card>.cards:nth-of-type(3) {
+  animation: move-up 0.8s ease-in-out;
+}
+
 .card-title {
   padding-left:15px;
   padding-top:15px;
@@ -57,6 +69,7 @@
 }
 
 .resource-actions-container button {
+  background-color: #F4F4F4;
   color:rgba(0,0,0,0.54);
 }
 
@@ -75,8 +88,7 @@
 }
 
 .profile-box {
-  padding:15%;
-  margin-top:100px;
+  padding:5% 15% 5% 15%;
   border-radius: 5px;
 }
 
@@ -101,6 +113,8 @@
   box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
   transition: all 0.3s cubic-bezier(.25,.8,.25,1);
   border:none;
+  animation: move-up 0.8s ease-in-out;
+  animation-fill-mode: forwards;
 }
 
 .card-container:hover {
@@ -121,6 +135,11 @@
   margin-left: auto;
   margin-right: auto;
   width: 500px;
+  color:rgba(0,0,0,0.6);
+}
+
+.intro p {
+  margin-bottom: 25px;
 }
 
 .resource-card .card {
@@ -182,7 +201,9 @@
 .explore-search {
   margin-left: auto;
   margin-right: auto;
-  padding: 5% 25% 0% 25%;
+  width:50%;
+  margin-bottom: 25px;
+  margin-top:50px;
 }
 
 .comment-box {
@@ -348,5 +369,10 @@
 @media (max-width: 768px) {
   .intro {
     width: 300px;
+  }
+
+  .explore-search {
+    margin-top:25px;
+    width:100%;
   }
 }

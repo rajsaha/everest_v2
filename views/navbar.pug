@@ -1,5 +1,4 @@
-div
-  nav.navbar.navbar-light.navbar-expand-md.navigation-clean-button(style='padding-bottom:16px;')
+nav.navbar.navbar-light.navbar-expand-lg.navigation-clean-button(style='padding-bottom:16px;')
     .container
       if currentUser
         a.navbar-brand.text-uppercase(href='/feed', style='font-weight:normal;')
@@ -23,9 +22,9 @@ div
           li.nav-item
             if currentUser
               span.navbar-text.actions
-                a.login(href='profile') HI, #{name}&nbsp;&nbsp;
+                a.nav-link.login(href='profile') Hi, #{name}&nbsp;&nbsp;
               span.navbar-text.actions
-                a.login(href='logout') Log Out
+                a.nav-link.login(href='logout') Logout
             else
               span.navbar-text.actions
                 a.login(href='login') Log In
