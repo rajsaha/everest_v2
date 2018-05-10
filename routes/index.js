@@ -97,7 +97,7 @@ router.get('/public_profile', mid.requiresLogin, async (req, res, next) => {
       '<div class="col-md-12 profile-box">'+
       '<div class="followers">' +
       '<h2 class="public-username">'+ user.username +'&nbsp;</h2>'+
-      '<button id="btn_follow_' + user.username + '" class="btn btn-light" onclick="follow_user(\'' + public_profile_username + '\')"><i class="fas fa-user-plus"></i>&nbsp;<span>Follow</span></button>'+
+      '<button id="btn_follow_' + user.username + '" class="btn btn-success" onclick="follow_user(\'' + public_profile_username + '\')"><i class="fas fa-user-plus"></i>&nbsp;<span>Follow</span></button>'+
       '</div>' +
       '<p>'+ user.name +'</p>'+
       '<p>'+ user.email +'</p>'+

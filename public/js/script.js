@@ -153,7 +153,11 @@ function showErrorDialog(resource_id) {
 
 function checkIfSuccess(message) {
 	if(message === 'success') {
-		$('#addToCollection'+resource_id).modal('hide');
+		//$('#addToCollection'+resource_id).modal('hide');
+    $('.add-to-collection-success').css('display','inherit');
+    setTimeout(function(){
+      $('.add-to-collection-success').css('display','none');
+    },3000);
 	} else {
 		showErrorDialog(resource_id);
 	}
@@ -211,7 +215,11 @@ function goto_search_page() {
 
 function update_explore_page(output) {
   $("#explore_feed").html("");
-  $("#explore_feed").append("<" + output);
+  if(output == '') {
+    $("#explore_feed").append("<div class='explore-search-error'><i class='fas fa-exclamation-triangle'></i>&nbsp;&nbsp;<span>Nothing found with that tag. Try something else.</span></div>");
+  } else {
+    $("#explore_feed").append("<" + output);
+  }
 }
 
 function show_collection(index, title, user) {

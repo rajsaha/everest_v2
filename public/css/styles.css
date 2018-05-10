@@ -93,6 +93,7 @@
 }
 
 .profile-box h2 {
+  margin-top:25px;
   margin-bottom: 50px;
 }
 
@@ -284,6 +285,44 @@
   margin-right:auto;
 }
 
+.add-to-collection-success {
+  position:fixed;
+  left:0;
+  right:0;
+  bottom:25px;
+  max-width: 400px;
+  animation: move-up 0.8s ease-in-out, fade-out 0.8s ease-in-out;
+  animation-fill-mode: forwards;
+  animation-delay: 0s, 4s;
+  display:none;
+  margin-left: auto;
+  margin-right:auto;
+}
+
+.add-to-collection-error {
+  position:fixed;
+  left:0;
+  right:0;
+  bottom:25px;
+  max-width: 400px;
+  animation: move-up 0.8s ease-in-out, fade-out 0.8s ease-in-out;
+  animation-fill-mode: forwards;
+  animation-delay: 0s, 4s;
+  display:none;
+  margin-left: auto;
+  margin-right:auto;
+}
+
+.explore-search-error {
+  padding:100px;
+  background-color: #FAFAFA;
+  color:rgba(0,0,0,0.5);
+  text-align: center;
+  width:75%;
+  margin-left: auto;
+  margin-right: auto;
+}
+
 @keyframes move-up {
   0% {
     opacity:0;
@@ -373,6 +412,10 @@
 
   .explore-search {
     margin-top:25px;
+    width:100%;
+  }
+
+  .explore-search-error {
     width:100%;
   }
 }

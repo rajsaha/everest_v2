@@ -9,3 +9,15 @@ block content
           .input-group-append
             button.btn.btn-primary(type='button', onclick='search()') Search
   #explore_feed
+  .add-to-collection-success
+    .alert.alert-success
+      i.fas.fa-check-circle &nbsp;
+      span Added resource to the collection
+  .add-to-collection-error
+    .alert.alert-warning
+      i.fas.fa-exclamation-triangle &nbsp;
+      span Couldn't add the resource to the collection
+  .feed-error
+    .alert.alert-warning
+      i.fas.fa-exclamation-triangle &nbsp;
+      span The site doesn't seem to have any image metadata. Please use a custom image
