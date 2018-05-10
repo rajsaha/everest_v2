@@ -287,8 +287,14 @@ router.post('/public_collection', mid.requiresLogin, async (req, res, next) => {
     public_profile_username = req.body._user;
     console.log(req.body._index + ' ' + req.body._title);
     let user = await  User.findOne({ username: public_profile_username });
+    let own = await User.findOne({_id:req.session.userId});
     let resource = await Resource.find({_id:{$in:user.all_collections[req.body._index].resources}});
     console.log(resource);
+
+    for (var i = 0; i < own.all_collections.length; i++) {
+        collection_select += '<option value="' + own.all_collections[i].title + '">' + own.all_collections[i].title + '</option>';
+    }
+
     resource.forEach((resource) => {
         //split tags
         var tags = resource.tags.split(', ');
