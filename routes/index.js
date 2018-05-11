@@ -11,6 +11,7 @@ router.get('/profile', mid.requiresLogin, async (req, res, next) => {
     let open_tag = 'div class="collections"><div class="card card-container">';
     let close_tag = '</div></div';
     let user = await  User.findOne({ _id: req.session.userId });
+    let level = "";
     for(let i=0; i<user.all_collections.length;i++) {
          let resource = await Resource.findOne({_id:user.all_collections[i].resources[0]});
          body += open_tag;
@@ -20,7 +21,17 @@ router.get('/profile', mid.requiresLogin, async (req, res, next) => {
          '</p></div>';
          body += close_tag;
     }
-    res.render('profile', {title:'Profile', name: user.name, username:user.username, email:user.email, collections:body, followers:user.followers})
+
+    if(user.points < 10) {
+        level = "0";
+    } else if (user.points >= 10 && user.points < 50) {
+        level = "1";
+    } else if(user.points >= 50 && user.points < 100) {
+        level = "3";
+    } else if(user.points >= 100 && user.points < 150) {
+        level = "4";
+    }
+    res.render('profile', {title:'Profile', name: user.username, username:user.username, email:user.email, collections:body, followers:user.followers, level:level})
 });
 
 var public_profile_username = '';
@@ -36,6 +47,7 @@ router.get('/public_profile', mid.requiresLogin, async (req, res, next) => {
     let _followers = '';
     let user = await  User.findOne({ username: public_profile_username });
     let own = await User.findOne({_id: req.session.userId});
+    let level = "";
 
     //Get public profile user collections
     for(let i=0; i<user.all_collections.length;i++) {
@@ -67,6 +79,16 @@ router.get('/public_profile', mid.requiresLogin, async (req, res, next) => {
       collection_output = '<p>'+ user.name +' doesn\'t have any collections yet.</p>';
     }
 
+    if(user.points < 10) {
+        level = "0";
+    } else if (user.points >= 10 && user.points < 50) {
+        level = "1";
+    } else if(user.points >= 50 && user.points < 100) {
+        level = "3";
+    } else if(user.points >= 100 && user.points < 150) {
+        level = "4";
+    }
+
     //Check if logged in user is following public_profile_user
     var own_has_followers = own.followers.includes(public_profile_username);
 
@@ -76,10 +98,11 @@ router.get('/public_profile', mid.requiresLogin, async (req, res, next) => {
       '<div class="col-md-12 profile-box">'+
       '<div class="followers">' +
       '<h2 class="public-username">'+ user.username +'&nbsp;</h2>'+
-      '<button id="btn_follow_' + user.username + '" class="btn btn-light" onclick="unfollow_user(\'' + public_profile_username + '\')"><i class="fas fa-user-times"></i>&nbsp;<span>Unfollow</span></button>'+
+      '<button style="margin-bottom:10px; margin-left:20px;" id="btn_follow_' + user.username + '" class="btn btn-light" onclick="unfollow_user(\'' + public_profile_username + '\')"><i class="fas fa-user-times"></i>&nbsp;<span>Unfollow</span></button>'+
       '</div>'+
       '<p class="public-name">'+ user.name +'</p>'+
       '<p class="public-email">'+ user.email +'</p>'+
+      '<p>Level '+ level +'</p>'+
       '</div>'+
       '<div class="col-md-12 profile-box">'+
       '<h2><strong>Collections</strong></h2>'+
@@ -97,10 +120,11 @@ router.get('/public_profile', mid.requiresLogin, async (req, res, next) => {
       '<div class="col-md-12 profile-box">'+
       '<div class="followers">' +
       '<h2 class="public-username">'+ user.username +'&nbsp;</h2>'+
-      '<button id="btn_follow_' + user.username + '" class="btn btn-success" onclick="follow_user(\'' + public_profile_username + '\')"><i class="fas fa-user-plus"></i>&nbsp;<span>Follow</span></button>'+
+      '<button style="margin-bottom:10px; margin-left:20px;" id="btn_follow_' + user.username + '" class="btn btn-success" onclick="follow_user(\'' + public_profile_username + '\')"><i class="fas fa-user-plus" style="color:white;"></i>&nbsp;<span style="color:white;">Follow</span></button>'+
       '</div>' +
       '<p>'+ user.name +'</p>'+
       '<p>'+ user.email +'</p>'+
+      '<p>Level '+ level +'</p>'+
       '</div>'+
       '<div class="col-md-12 profile-box">'+
       '<h2>Collections</h2>'+
@@ -200,7 +224,7 @@ router.post('/collection', mid.requiresLogin, async (req, res, next) => {
                 modal +
                 '<div class="user-bar">' +
                 '<span onclick="load_user_profile(\'' + resource.username + '\')" class="float-left"><strong>' + resource.username + '</strong></span></form>' +
-                '<span class="float-right"><strong>level 1</strong></span>' +
+                '<span class="float-right"><strong></strong></span>' +
                 '</div>' +
                 '<a href="' + resource.url + '"><img class="img-thumbnail card-img w-100 d-block img-thumbnail-override" src="' + resource.image + '"></a>' +
                 '<div class="card-body"><h4 class="card-title">' + resource.title + '</h4>' +
@@ -239,7 +263,7 @@ router.post('/collection', mid.requiresLogin, async (req, res, next) => {
                 modal +
                 '<div class="user-bar">' +
                 '<span onclick="load_user_profile(\'' + resource.username + '\')" class="float-left"><strong>' + resource.username + '</strong></span>' +
-                '<span class="float-right"><strong>level 1</strong></span>' +
+                '<span class="float-right"><strong></strong></span>' +
                 '</div>' +
                 '<a href="' + resource.url + '"><img class="img-thumbnail card-img w-100 d-block img-thumbnail-override" src="' + resource.image + '"></a>' +
                 '<div class="card-body"><h4 class="card-title">' + resource.title + '</h4>' +
@@ -361,7 +385,7 @@ router.post('/public_collection', mid.requiresLogin, async (req, res, next) => {
                 modal +
                 '<div class="user-bar">' +
                 '<span onclick="load_user_profile(\'' + resource.username + '\')" class="float-left"><strong>' + resource.username + '</strong></span></form>' +
-                '<span class="float-right"><strong>level 1</strong></span>' +
+                '<span class="float-right"><strong></strong></span>' +
                 '</div>' +
                 '<a href="' + resource.url + '"><img class="img-thumbnail card-img w-100 d-block img-thumbnail-override" src="' + resource.image + '"></a>' +
                 '<div class="card-body"><h4 class="card-title">' + resource.title + '</h4>' +
@@ -400,7 +424,7 @@ router.post('/public_collection', mid.requiresLogin, async (req, res, next) => {
                 modal +
                 '<div class="user-bar">' +
                 '<span onclick="load_user_profile(\'' + resource.username + '\')" class="float-left"><strong>' + resource.username + '</strong></span>' +
-                '<span class="float-right"><strong>level 1</strong></span>' +
+                '<span class="float-right"><strong></strong></span>' +
                 '</div>' +
                 '<a href="' + resource.url + '"><img class="img-thumbnail card-img w-100 d-block img-thumbnail-override" src="' + resource.image + '"></a>' +
                 '<div class="card-body"><h4 class="card-title">' + resource.title + '</h4>' +
@@ -604,13 +628,16 @@ router.post('/resource_upload', function(req, res, next) {
           };
 
           //insert document into model
-          Resource.create(resourceData, function(error, user) {
+          Resource.create(resourceData, function(error, resource) {
               if (error) {
                   // return next(error);
                   req.app.io.emit('append_new_resource_error', 'error');
               } else {
                   // return res.redirect('/feed');
-                  req.app.io.emit('append_new_resource_success', 'success');
+                  User.findOneAndUpdate({_id: req.session.userId},{$inc: { points: 10 }}).exec(function(error, user) {
+                    req.app.io.emit('append_new_resource_success', 'success');
+                  });
+                  
                   //return res.send(user);
               }
           });
@@ -630,13 +657,15 @@ router.post('/resource_upload', function(req, res, next) {
                   };
 
                   //insert document into model
-                  Resource.create(resourceData, function(error, user) {
+                  Resource.create(resourceData, function(error, resource) {
                       if (error) {
                           //return next(error);
                           req.app.io.emit('append_new_resource_error', 'error');
                       } else {
                           // return res.redirect('/feed');
-                          req.app.io.emit('append_new_resource_success', 'success');
+                          User.findOneAndUpdate({_id: req.session.userId},{$inc: { points: 10 }}).exec(function(error, user) {
+                            req.app.io.emit('append_new_resource_success', 'success');
+                          });
                           //return res.send(user);
                       }
                   });
@@ -716,7 +745,7 @@ router.get('/feed', mid.requiresLogin, function(req, res, next) {
 });
 
 //GET /feed-data
-router.get('/feed-data', function(req, res, next) {
+router.get('/feed-data', function (req, res, next) {
     var output = '';
     var output_tag = '';
     var output_comments = '';
@@ -806,7 +835,7 @@ router.get('/feed-data', function(req, res, next) {
                                             modal +
                                             '<div class="user-bar">' +
                                             '<span onclick="load_user_profile(\'' + resource.username + '\')" class="float-left"><strong>' + resource.username + '</strong></span></form>' +
-                                            '<span class="float-right"><strong>level 1</strong></span>' +
+                                            '<span class="float-right"><strong></strong></span>' +
                                             '</div>' +
                                             '<a href="' + resource.url + '"><img class="img-thumbnail card-img w-100 d-block img-thumbnail-override" src="' + resource.image + '"></a>' +
                                             '<div class="card-body"><h4 class="card-title">' + resource.title + '</h4>' +
@@ -845,7 +874,7 @@ router.get('/feed-data', function(req, res, next) {
                                             modal +
                                             '<div class="user-bar">' +
                                             '<span onclick="load_user_profile(\'' + resource.username + '\')" class="float-left"><strong>' + resource.username + '</strong></span>' +
-                                            '<span class="float-right"><strong>level 1</strong></span>' +
+                                            '<span class="float-right"><strong></strong></span>' +
                                             '</div>' +
                                             '<a href="' + resource.url + '"><img class="img-thumbnail card-img w-100 d-block img-thumbnail-override" src="' + resource.image + '"></a>' +
                                             '<div class="card-body"><h4 class="card-title">' + resource.title + '</h4>' +
@@ -1311,7 +1340,7 @@ router.get('/explore-data', function(req, res, next) {
                                             modal +
                                             '<div class="user-bar">' +
                                             '<span onclick="load_user_profile(\'' + resource.username + '\')" class="float-left"><strong>' + resource.username + '</strong></span></form>' +
-                                            '<span class="float-right"><strong>level 1</strong></span>' +
+                                            '<span class="float-right"><strong></strong></span>' +
                                             '</div>' +
                                             '<a href="' + resource.url + '"><img class="img-thumbnail card-img w-100 d-block img-thumbnail-override" src="' + resource.image + '"></a>' +
                                             '<div class="card-body"><h4 class="card-title">' + resource.title + '</h4>' +
@@ -1350,7 +1379,7 @@ router.get('/explore-data', function(req, res, next) {
                                             modal +
                                             '<div class="user-bar">' +
                                             '<span onclick="load_user_profile(\'' + resource.username + '\')" class="float-left"><strong>' + resource.username + '</strong></span>' +
-                                            '<span class="float-right"><strong>level 1</strong></span>' +
+                                            '<span class="float-right"><strong></strong></span>' +
                                             '</div>' +
                                             '<a href="' + resource.url + '"><img class="img-thumbnail card-img w-100 d-block img-thumbnail-override" src="' + resource.image + '"></a>' +
                                             '<div class="card-body"><h4 class="card-title">' + resource.title + '</h4>' +

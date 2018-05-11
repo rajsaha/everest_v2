@@ -38,7 +38,11 @@ var UserSchema = new mongoose.Schema({
 		type: [String],
 		default: 'everest'
 	},
-	recommends: [String]
+	recommends: [String],
+	points: {
+		type: Number,
+		default: 0
+	}
 });
 
 //authenticate input against database documents
@@ -68,7 +72,7 @@ UserSchema.statics.authenticate = function(username, password, callback) {
 // var salt = bcrypt.genSaltSync(10);
 // var hash = bcrypt.hashSync("B4c0/\/", salt);
 UserSchema.pre('save', function(next) {
-	const user = this;
+	var user = this;
 	// bcrypt.hash(user.password, 10, function(err, hash) {
 	// 	if (err) {
 	// 		return next(err);

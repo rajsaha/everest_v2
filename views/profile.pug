@@ -29,6 +29,37 @@ block content
 					
 				h2
 					strong Personal Details
+				h4 
+					strong Current Level
+				.trophy-rack
+					if level == '0'
+						p.trophy-label You don't have a level yet. Earn points by sharing resources!
+						img.responsive.trophy(src='img/level1trophy.svg' style='opacity:0.1;')
+						img.responsive.trophy(src='img/level2trophy.svg' style='opacity:0.1;')
+						img.responsive.trophy(src='img/level3trophy.svg' style='opacity:0.1;')
+						img.responsive.trophy(src='img/level4trophy.svg' style='opacity:0.1;')
+					if level == '1'
+						img.responsive.trophy(src='img/level1trophy.svg')
+						img.responsive.trophy(src='img/level2trophy.svg' style='opacity:0.1;')
+						img.responsive.trophy(src='img/level3trophy.svg' style='opacity:0.1;')
+						img.responsive.trophy(src='img/level4trophy.svg' style='opacity:0.1;')
+					if level == '2'
+						img.responsive.trophy(src='img/level1trophy.svg')
+						img.responsive.trophy(src='img/level2trophy.svg')
+						img.responsive.trophy(src='img/level3trophy.svg' style='opacity:0.1;')
+						img.responsive.trophy(src='img/level4trophy.svg' style='opacity:0.1;')
+					if level == '3'
+						img.responsive.trophy(src='img/level1trophy.svg')
+						img.responsive.trophy(src='img/level2trophy.svg')
+						img.responsive.trophy(src='img/level3trophy.svg')
+						img.responsive.trophy(src='img/level4trophy.svg' style='opacity:0.1;')
+					if level == '4'
+						img.responsive.trophy(src='img/level1trophy.svg')
+						img.responsive.trophy(src='img/level2trophy.svg')
+						img.responsive.trophy(src='img/level3trophy.svg')
+						img.responsive.trophy(src='img/level4trophy.svg')
+				h4
+					strong Update Details
 				form
 					.form-group
 						label(for='exampleInputEmail1') Name

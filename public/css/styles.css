@@ -85,7 +85,6 @@
 
 .profile-sidebar-content {
   margin-top:25px;
-  margi
 }
 
 .profile-box {
@@ -146,10 +145,6 @@
 
 .resource-card .card {
   display:inherit;
-}
-
-.collections {
-    margin-bottom: 100px;
 }
 
 .collections>.card-container {
@@ -418,6 +413,21 @@
   margin-right: auto;
 }
 
+.trophy {
+  display: inline-block;
+  padding:5px;
+  max-width: 150px;
+}
+
+.trophy-rack {
+  margin-top:25px;
+  margin-bottom: 50px;
+}
+
+.trophy-label {
+  padding:5px;
+}
+
 @media (max-width: 768px) {
   .intro {
     width: 300px;
@@ -430,5 +440,9 @@
 
   .explore-search-error {
     width:100%;
+  }
+
+  .public-username {
+    font-size: 16px;
   }
 }
