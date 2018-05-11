@@ -42,7 +42,7 @@ function load_comments(resource) {
 	var comments = '';
 	console.log(resource);
 	console.log(resource[0]._id);
-	var time = '';
+  var time = '';
 	for(var i=0; i<resource[0].all_comments.length; i++) {
 		time = moment(resource[0].all_comments[i].timestamp).format("MMM DD, YY | h a");
 		comments += '<div class="comment">'+

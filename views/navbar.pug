@@ -2,11 +2,11 @@ nav.navbar.navbar-light.navbar-expand-lg.navigation-clean-button(style='padding-
     .container
       if currentUser
         a.navbar-brand.text-uppercase(href='/feed', style='font-weight:normal;')
-          img#sitelogo(src='img/everest.png', width='40px')
+          img#sitelogo.rounded(src='img/everest.png', width='40px')
           |   &nbsp;&nbsp;E v e r e s t
       else
         a.navbar-brand.text-uppercase(href='/', style='font-weight:normal;')
-          img#sitelogo(src='img/everest.png', width='40px' class='rounded')
+          img#sitelogo.rounded(src='img/everest.png', width='40px')
           |   &nbsp;&nbsp;E v e r e s t
       button.navbar-toggler(data-toggle='collapse', data-target='#navcol-1')
         span.sr-only Toggle navigation
@@ -15,14 +15,20 @@ nav.navbar.navbar-light.navbar-expand-lg.navigation-clean-button(style='padding-
         ul.nav.navbar-nav.mr-auto
           if currentUser            
             li.nav-item.share-resources-button(role='button', data-toggle='modal', data-target='#resourceShare')
-                a.nav-link.share-resources-button(href='#resourceShare') Share Resource
+                a.nav-link.share-resources-button(href='#resourceShare') 
+                  i.fas.fa-share &nbsp;&nbsp;
+                  span Resource
             li.nav-item
-                a.nav-link(href='explore') Explore
+                a.nav-link(href='explore')
+                  i.fas.fa-search &nbsp;&nbsp;
+                  span Explore
         ul.nav.navbar-nav.ml-auto
           li.nav-item
             if currentUser
+              i.far.fa-user
               span.navbar-text.actions
-                a.nav-link.login(href='profile') Hi, #{name}&nbsp;&nbsp;
+                a.nav-link.login(href='profile') #{name}
+              i.fas.fa-sign-out-alt
               span.navbar-text.actions
                 a.nav-link.login(href='logout') Logout
             else

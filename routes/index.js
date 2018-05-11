@@ -206,7 +206,7 @@ router.post('/collection', mid.requiresLogin, async (req, res, next) => {
                 '<div class="card-body"><h4 class="card-title">' + resource.title + '</h4>' +
                 '<div class="resource-tags-container">' + output_tag + '</div>' +
                 '<p class="card-text">' + resource.description + '</p>' +
-                '<div class="recommended-by-count"><p>' + resource.recommended_by_count + ' Recommends' + '</p></div>' +
+                '<div class="recommended-by-count"><p>' + resource.recommended_by_count + ' Recommends' + '</p><span>' + resource.all_comments.length + ' Comments</span></div>' +
                 '<div class="resource-actions-container">' +
                 '<form class="form-inline">' +
                 '<input type="hidden" name="_id" value="' + resource._id + '" id="resource_id"></input>' +
@@ -245,7 +245,7 @@ router.post('/collection', mid.requiresLogin, async (req, res, next) => {
                 '<div class="card-body"><h4 class="card-title">' + resource.title + '</h4>' +
                 '<div class="resource-tags-container">' + output_tag + '</div>' +
                 '<p class="card-text">' + resource.description + '</p>' +
-                '<div class="recommended-by-count"><p>' + resource.recommended_by_count + ' Recommends' + '</p></div>' +
+                '<div class="recommended-by-count"><p>' + resource.recommended_by_count + ' Recommends' + '</p><span>' + resource.all_comments.length + ' Comments</span></div>' +
                 '<div class="resource-actions-container">' +
                 '<form class="form-inline">' +
                 '<input type="hidden" name="_id" value="' + resource._id + '" id="resource_id"></input>' +
@@ -367,7 +367,7 @@ router.post('/public_collection', mid.requiresLogin, async (req, res, next) => {
                 '<div class="card-body"><h4 class="card-title">' + resource.title + '</h4>' +
                 '<div class="resource-tags-container">' + output_tag + '</div>' +
                 '<p class="card-text">' + resource.description + '</p>' +
-                '<div class="recommended-by-count"><p>' + resource.recommended_by_count + ' Recommends' + '</p></div>' +
+                '<div class="recommended-by-count"><p>' + resource.recommended_by_count + ' Recommends' + '<span>' + resource.all_comments.length + ' Comments</span></p></div>' +
                 '<div class="resource-actions-container">' +
                 '<form class="form-inline">' +
                 '<input type="hidden" name="_id" value="' + resource._id + '" id="resource_id"></input>' +
@@ -406,7 +406,7 @@ router.post('/public_collection', mid.requiresLogin, async (req, res, next) => {
                 '<div class="card-body"><h4 class="card-title">' + resource.title + '</h4>' +
                 '<div class="resource-tags-container">' + output_tag + '</div>' +
                 '<p class="card-text">' + resource.description + '</p>' +
-                '<div class="recommended-by-count"><p>' + resource.recommended_by_count + ' Recommends' + '</p></div>' +
+                '<div class="recommended-by-count"><p>' + resource.recommended_by_count + ' Recommends' + '<span>' + resource.all_comments.length + ' Comments</span></p></div>' +
                 '<div class="resource-actions-container">' +
                 '<form class="form-inline">' +
                 '<input type="hidden" name="_id" value="' + resource._id + '" id="resource_id"></input>' +
@@ -812,7 +812,7 @@ router.get('/feed-data', function(req, res, next) {
                                             '<div class="card-body"><h4 class="card-title">' + resource.title + '</h4>' +
                                             '<div class="resource-tags-container">' + output_tag + '</div>' +
                                             '<p class="card-text">' + resource.description + '</p>' +
-                                            '<div class="recommended-by-count"><p>' + resource.recommended_by_count + ' Recommends' + '</p></div>' +
+                                            '<div class="recommended-by-count"><p>' + resource.recommended_by_count + ' Recommends' + '</p><span>'+ resource.all_comments.length +' Comments</span></div>' +
                                             '<div class="resource-actions-container">' +
                                             '<form class="form-inline">' +
                                             '<input type="hidden" name="_id" value="' + resource._id + '" id="resource_id"></input>' +
@@ -851,7 +851,7 @@ router.get('/feed-data', function(req, res, next) {
                                             '<div class="card-body"><h4 class="card-title">' + resource.title + '</h4>' +
                                             '<div class="resource-tags-container">' + output_tag + '</div>' +
                                             '<p class="card-text">' + resource.description + '</p>' +
-                                            '<div class="recommended-by-count"><p>' + resource.recommended_by_count + ' Recommends' + '</p></div>' +
+                                            '<div class="recommended-by-count"><p>' + resource.recommended_by_count + ' Recommends' + '</p><span>' + resource.all_comments.length + ' Comments</span></div>' +
                                             '<div class="resource-actions-container">' +
                                             '<form class="form-inline">' +
                                             '<input type="hidden" name="_id" value="' + resource._id + '" id="resource_id"></input>' +
@@ -1317,7 +1317,7 @@ router.get('/explore-data', function(req, res, next) {
                                             '<div class="card-body"><h4 class="card-title">' + resource.title + '</h4>' +
                                             '<div class="resource-tags-container">' + output_tag + '</div>' +
                                             '<p class="card-text">' + resource.description + '</p>' +
-                                            '<div class="recommended-by-count"><p>' + resource.recommended_by_count + ' Recommends' + '</p></div>' +
+                                            '<div class="recommended-by-count"><p>' + resource.recommended_by_count + ' Recommends' + '</p><span>' + resource.all_comments.length + ' Comments</span></div>' +
                                             '<div class="resource-actions-container">' +
                                             '<form class="form-inline">' +
                                             '<input type="hidden" name="_id" value="' + resource._id + '" id="resource_id"></input>' +
@@ -1356,7 +1356,7 @@ router.get('/explore-data', function(req, res, next) {
                                             '<div class="card-body"><h4 class="card-title">' + resource.title + '</h4>' +
                                             '<div class="resource-tags-container">' + output_tag + '</div>' +
                                             '<p class="card-text">' + resource.description + '</p>' +
-                                            '<div class="recommended-by-count"><p>' + resource.recommended_by_count + ' Recommends' + '</p></div>' +
+                                            '<div class="recommended-by-count"><p>' + resource.recommended_by_count + ' Recommends' + '</p><span>' + resource.all_comments.length + ' Comments</span></div>' +
                                             '<div class="resource-actions-container">' +
                                             '<form class="form-inline">' +
                                             '<input type="hidden" name="_id" value="' + resource._id + '" id="resource_id"></input>' +

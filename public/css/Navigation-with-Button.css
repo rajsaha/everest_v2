@@ -2,13 +2,15 @@
   background:#fff;
   padding-top:.75rem;
   padding-bottom:.75rem;
-  color:#333;
+  color:rgba(0,0,0,0.54);
   border-radius:0;
   box-shadow:none;
   border:none;
   margin-bottom:0;
   font-family: 'Montserrat', sans-serif;
+  font-size: 14px;
   text-transform: uppercase;
+  display: flex;
 }
 
 @media (min-width:768px) {

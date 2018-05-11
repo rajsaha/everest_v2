@@ -40,6 +40,7 @@
 
 .card-text {
   padding-left:15px;
+  padding-right:15px;
 }
 
 .resource-tag {
@@ -192,9 +193,16 @@
   display: inline;
 }
 
-.recommended-by-count {
+.recommended-by-count p{
   font-size: 12px;
   margin-bottom: 25px;
+  color:black;
+  padding-left:15px;
+  display: inline-block;
+}
+
+.recommended-by-count span {
+  font-size: 12px;
   color:black;
   padding-left:15px;
 }
@@ -360,6 +368,11 @@
   margin-bottom: 4px;
   height:60px;
   line-height: 35px;
+  transition: background-color 0.3s ease-in;
+}
+
+.followers:hover {
+  background-color: rgba(0,0,0,0.10);
 }
 
 .followers span {
